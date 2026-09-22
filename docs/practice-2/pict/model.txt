@@ -1,0 +1,9 @@
+# Authorization: amounts and remaining limits are in kopecks.
+card_status: ACTIVE, INACTIVE, BLOCKED, EXPIRED
+expiry: PAST, CURRENT, FUTURE
+amount: 90003, 100000, 100001
+balance: 100000, 200000
+daily_remaining: 100000, 200000
+monthly_remaining: 100000, 200000
+terminal_type: POS, ATM, ECOM
+mcc: 5411, 5812
