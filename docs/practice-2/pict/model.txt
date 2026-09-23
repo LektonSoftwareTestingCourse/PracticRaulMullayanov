@@ -7,3 +7,5 @@ daily_remaining: 100000, 200000
 monthly_remaining: 100000, 200000
 terminal_type: POS, ATM, ECOM
 mcc: 5411, 5812
+
+IF [card_status] = "EXPIRED" THEN [expiry] = "PAST";
