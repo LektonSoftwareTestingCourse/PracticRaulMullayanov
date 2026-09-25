@@ -1,0 +1,7 @@
+# CMS-01: POST /api/cards. Amounts are in minor currency units.
+bin: 400000, 400001
+cardholderName: IVAN IVANOV, PETR PETROV
+currencyCode: 643, 840
+dailyLimit: 100000, 200000
+monthlyLimit: 300000, 500000
+initialBalance: 100000, 200000
