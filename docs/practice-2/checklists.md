@@ -17,6 +17,7 @@
 - [x] [Набор PICT](pict/cases.txt) сгенерирован: 15 сценариев, seed `42`.
 - [x] Модель Authorization содержит ограничение `EXPIRED → PAST`.
 - [x] Для CMS подготовлены [модель](pict/cms-model.txt) и [набор PICT](pict/cms-cases.txt): шесть вариантов CMS-01, все 60 пар покрыты.
+- [x] Модель CMS содержит ограничение `monthlyLimit >= dailyLimit`.
 
 ## Дымовое тестирование — перед повторной приёмкой
 

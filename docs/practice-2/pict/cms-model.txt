@@ -5,3 +5,5 @@ currencyCode: 643, 840
 dailyLimit: 100000, 200000
 monthlyLimit: 300000, 500000
 initialBalance: 100000, 200000
+
+[monthlyLimit] >= [dailyLimit];

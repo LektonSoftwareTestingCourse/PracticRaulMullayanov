@@ -139,7 +139,7 @@ PW покрывает пары входных значений; отдельны
 
 ### 5.2. Card Management
 
-Модель [cms-model.txt](pict/cms-model.txt) и набор [cms-cases.txt](pict/cms-cases.txt) задают шесть вариантов существующего CMS-01. Параметры — поля `POST /api/cards`: `bin`, `cardholderName`, `currencyCode`, `dailyLimit`, `monthlyLimit`, `initialBalance`; значения указаны в модели. Все сочетания допустимы, дополнительное ограничение не требуется.
+Модель [cms-model.txt](pict/cms-model.txt) и набор [cms-cases.txt](pict/cms-cases.txt) задают шесть вариантов существующего CMS-01. Параметры — поля `POST /api/cards`: `bin`, `cardholderName`, `currencyCode`, `dailyLimit`, `monthlyLimit`, `initialBalance`; значения указаны в модели. Ограничение позитивного набора: `[monthlyLimit] >= [dailyLimit]` — соответствует валидации реализации CMS. При текущих значениях оно выполняется для всех сочетаний и не сокращает набор.
 
 Генерация: `pict docs/practice-2/pict/cms-model.txt /o:2 /r:42 > docs/practice-2/pict/cms-cases.txt`. Шесть строк покрывают все 60 пар значений.
 
