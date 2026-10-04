@@ -31,13 +31,13 @@
 
 ## Артефакт 2 — Тест-дизайн и баг-репорты
 
-- [ ] Разобраны ТЗ [`tz/04-authorization.md`](../tz/04-authorization.md) и [`tz/05-card-management.md`](../tz/05-card-management.md)
-- [ ] Определены классы эквивалентности для статусов карт (ACTIVE/INACTIVE/BLOCKED/EXPIRED)
-- [ ] Определены граничные значения для dailyLimit/monthlyLimit и суммы транзакции
-- [ ] Построена decision table (успех + все decline-причины)
-- [ ] Оформлены баг-репорты с шагами воспроизведения, ожидаемым и фактическим результатом
-- [ ] Тест-кейсы привязаны к требованиям (прослеживаемость)
-- [ ] Артефакт размещён по пути сдачи (см. [`submission-guide.md`](submission-guide.md))
+- [x] Разобраны ТЗ [`tz/04-authorization.md`](../tz/04-authorization.md) и [`tz/05-card-management.md`](../tz/05-card-management.md)
+- [x] Определены классы эквивалентности для статусов карт (ACTIVE/INACTIVE/BLOCKED/EXPIRED)
+- [x] Определены граничные значения для dailyLimit/monthlyLimit и суммы транзакции
+- [x] Построена decision table (успех + все decline-причины)
+- [x] Оформлены баг-репорты с шагами воспроизведения, ожидаемым и фактическим результатом
+- [x] Тест-кейсы привязаны к требованиям (прослеживаемость)
+- [x] Артефакт размещён по пути сдачи (см. [`submission-guide.md`](submission-guide.md))
 
 ---
 
