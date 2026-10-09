@@ -88,8 +88,8 @@ jobs:
     - name: Run java linter
       run: mvn -f services/pom.xml -P${{ matrix.service }} checkstyle:check
 
-    - name: Build services (tests skipped until students add them)
-      run: mvn -f services/pom.xml -P${{ matrix.service }} install -Dcheckstyle.skip=true -DskipTests
+    - name: Build services and run unit tests
+      run: mvn -f services/pom.xml -P${{ matrix.service }} install -Dcheckstyle.skip=true
 
   frontend-dashboard:
     runs-on: ubuntu-latest
