@@ -52,10 +52,15 @@ class TransactionRateLimitFilterTest {
     // Gateway: отказ лимитера завершает запрос без downstream-вызова и сообщает время повторной попытки.
     // Требование: tz/02-gateway.md:80 — раздел 4, HTTP 429 и retryAfterMs при превышении лимита.
     @Test
-    void rejectsExceededQuotaWithRequiredResponse() throws Exception {
+    void shouldReturnRateLimitResponseWhenQuotaIsExceeded() throws Exception {
+        // Arrange
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.post("/api/transactions"));
         when(limiter.allowRequest(KEY)).thenReturn(false);
+
+        // Act
         StepVerifier.create(filter.filter(exchange, chain)).verifyComplete();
+
+        // Assert
         assertEquals(HttpStatus.TOO_MANY_REQUESTS, exchange.getResponse().getStatusCode());
         assertEquals(MediaType.APPLICATION_JSON, exchange.getResponse().getHeaders().getContentType());
         assertEquals("1", exchange.getResponse().getHeaders().getFirst(HttpHeaders.RETRY_AFTER));
@@ -70,11 +75,16 @@ class TransactionRateLimitFilterTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, передача допустимой транзакции в Switch.
     // Требование: tz/02-gateway.md:80 — раздел 4, применение лимита к транзакциям.
     @Test
-    void forwardsAllowedTransaction() {
+    void shouldForwardTransactionWhenQuotaAllows() {
+        // Arrange
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.post("/api/transactions"));
         when(limiter.allowRequest(KEY)).thenReturn(true);
         when(chain.filter(exchange)).thenReturn(Mono.empty());
+
+        // Act
         StepVerifier.create(filter.filter(exchange, chain)).verifyComplete();
+
+        // Assert
         verify(chain).filter(exchange);
         verifyNoInteractions(metrics);
     }
@@ -83,10 +93,15 @@ class TransactionRateLimitFilterTest {
     // Требование: tz/02-gateway.md:80 — раздел 4, лимит для POST /api/transactions.
     @ParameterizedTest
     @CsvSource({"GET, /api/transactions", "GET, /health", "POST, /api/cards"})
-    void bypassesUnrelatedRequests(String method, String path) {
+    void shouldBypassRateLimiterWhenRequestIsUnrelated(String method, String path) {
+        // Arrange
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.method(HttpMethod.valueOf(method), path));
         when(chain.filter(exchange)).thenReturn(Mono.empty());
+
+        // Act
         StepVerifier.create(filter.filter(exchange, chain)).verifyComplete();
+
+        // Assert
         verify(chain).filter(exchange);
         verifyNoInteractions(limiter, metrics);
     }

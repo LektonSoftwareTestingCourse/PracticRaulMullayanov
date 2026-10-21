@@ -9,12 +9,10 @@ import com.processing.common.dto.authorization.AuthorizationRequest;
 import com.processing.common.dto.authorization.AuthorizationResponse;
 import com.processing.common.dto.cardmanagement.CardModel;
 import com.processing.common.dto.cardmanagement.CardModelStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,18 +56,28 @@ class AuthServiceKnownDefectsTest {
     @Mock private AuthorizationEventNotifier notifier;
     @Mock private BinLookupClient binLookup;
     @Mock private CardManagementClient cms;
-    @InjectMocks private AuthServiceImpl service;
+    private AuthServiceImpl service;
+
+    @BeforeEach
+    void setUp() {
+        service = new AuthServiceImpl(limits, notifier, binLookup, cms);
+    }
 
     // Authorization, BUG-P2-002: при одновременном превышении лимита и баланса приоритет имеет лимит (61).
     // Требование: tz/04-authorization.md:43 — раздел 2, строгий порядок шагов 4–6.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.1: AUTH-11.
     // Связанный дефект: docs/practice-2/test-design.md:223 — BUG-P2-002.
     @Test
-    void limitDeclineMustTakePriorityOverInsufficientBalance() {
+    void shouldPreferLimitDeclineWhenBalanceIsAlsoInsufficient() {
+        // Arrange
         prepareCard(new BigDecimal("50"));
         // В дефектной реализации до этой зависимости не доходят: stub описывает требуемый ответ проверки лимитов.
         lenient().when(limits.upsertLimitUsage(anyString(), any(), any(), any(), any())).thenReturn(0);
+
+        // Act
         AuthorizationResponse response = service.authorize(request(), Instant.now());
+
+        // Assert
         assertEquals("DECLINED", response.status());
         assertEquals("61", response.responseCode(), "ТЗ: лимиты проверяются раньше баланса, BUG-P2-002");
         assertEquals("EXCEEDS_AMOUNT_LIMIT", response.declineReason());
@@ -80,19 +88,35 @@ class AuthServiceKnownDefectsTest {
     // Требование: tz/04-authorization.md:110 — раздел 5, CMS недоступен → 05 / ISSUER_TIMEOUT.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.1: AUTH-12, AUTH-15.
     // Связанный дефект: docs/practice-2/test-design.md:255 — BUG-P2-004.
-    @ParameterizedTest
-    @ValueSource(booleans = {false, true})
-    void cmsUnavailableMustReturnIssuerTimeout(boolean failDuringReserve) {
-        if (failDuringReserve) {
-            prepareCard(new BigDecimal("1000"));
-            when(limits.upsertLimitUsage(anyString(), any(), any(), any(), any())).thenReturn(1);
-            when(limits.fetchRrnBlock()).thenReturn(1L);
-            doThrow(new ServiceUnavailableException("CMS down"))
-                    .when(cms).reserve(eq(new BigDecimal("100")), anyString(), eq(PAN));
-        } else {
-            when(cms.getCard(PAN)).thenThrow(new ServiceUnavailableException("CMS down"));
-        }
+    @Test
+    void shouldReturnIssuerTimeoutWhenCardLookupIsUnavailable() {
+        // Arrange
+        when(cms.getCard(PAN)).thenThrow(new ServiceUnavailableException("CMS down"));
+
+        // Act
         AuthorizationResponse response = service.authorize(request(), Instant.now());
+
+        // Assert
+        assertIssuerTimeout(response);
+    }
+
+    @Test
+    void shouldReturnIssuerTimeoutWhenReservationIsUnavailable() {
+        // Arrange
+        prepareCard(new BigDecimal("1000"));
+        when(limits.upsertLimitUsage(anyString(), any(), any(), any(), any())).thenReturn(1);
+        when(limits.fetchRrnBlock()).thenReturn(1L);
+        doThrow(new ServiceUnavailableException("CMS down"))
+                .when(cms).reserve(eq(new BigDecimal("100")), anyString(), eq(PAN));
+
+        // Act
+        AuthorizationResponse response = service.authorize(request(), Instant.now());
+
+        // Assert
+        assertIssuerTimeout(response);
+    }
+
+    private static void assertIssuerTimeout(AuthorizationResponse response) {
         assertEquals("DECLINED", response.status());
         assertEquals("05", response.responseCode(), "ТЗ требует код 05, BUG-P2-004");
         assertEquals("ISSUER_TIMEOUT", response.declineReason());
@@ -103,7 +127,8 @@ class AuthServiceKnownDefectsTest {
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.1: AUTH-13.
     // Связанный дефект: docs/practice-2/test-design.md:239 — BUG-P2-003.
     @Test
-    void rrnMustContainGenerationTime() {
+    void shouldIncludeGenerationTimeWhenGeneratingRrn() {
+        // Arrange
         Instant instant = Instant.parse("2026-10-04T12:34:56Z");
         LocalDate date = LocalDate.of(2026, 10, 4);
         LocalDateTime dateTime = LocalDateTime.of(2026, 10, 4, 12, 34, 56);
@@ -114,7 +139,11 @@ class AuthServiceKnownDefectsTest {
             instants.when(Instant::now).thenReturn(instant);
             dates.when(LocalDate::now).thenReturn(date);
             times.when(LocalDateTime::now).thenReturn(dateTime);
+
+            // Act
             String rrn = service.generateRRN();
+
+            // Assert
             assertTrue(rrn.matches("[0-9]{12}"));
             assertEquals("6277", rrn.substring(0, 4));
             assertEquals("123456", rrn.substring(4, 10), "ТЗ требует компонент HHmmss, BUG-P2-003");

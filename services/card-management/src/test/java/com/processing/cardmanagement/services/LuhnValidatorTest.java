@@ -25,8 +25,13 @@ class LuhnValidatorTest {
             "4532015112830366, true", "4532015112830367, false",
             "5555555555554444, true", "5555555555554445, false"
     })
-    void checksKnownPanExamples(String pan, boolean valid) {
-        assertEquals(valid, validator.isValid(pan));
+    void shouldValidatePanWhenChecksumIsKnown(String pan, boolean valid) {
+        // Arrange
+        // Act
+        boolean actual = validator.isValid(pan);
+
+        // Assert
+        assertEquals(valid, actual);
     }
 
     // Card Management: случайность влияет на цифры, но не на длину, BIN или независимый checksum.
@@ -35,10 +40,18 @@ class LuhnValidatorTest {
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-01.
     @ParameterizedTest
     @ValueSource(strings = {"400000", "400001", "400002", "400003", "400004"})
-    void generatesSixteenDigitPanWithRequestedBinAndValidChecksum(String bin) {
+    void shouldGenerateValidPanWhenBinIsProvided(String bin) {
+        // Arrange
+        // Act
         String pan = validator.generatePan(bin);
+
+        // Assert
         assertTrue(pan.matches("[0-9]{16}"), pan);
         assertTrue(pan.startsWith(bin), pan);
+        assertEquals(0, luhnSum(pan) % 10, pan);
+    }
+
+    private static int luhnSum(String pan) {
         // Независимый расчёт: проверка генератора не должна полагаться на его же isValid().
         int sum = 0;
         for (int i = 0; i < pan.length(); i++) {
@@ -46,6 +59,6 @@ class LuhnValidatorTest {
             int weighted = i % 2 == 0 ? digit * 2 : digit;
             sum += weighted / 10 + weighted % 10;
         }
-        assertEquals(0, sum % 10, pan);
+        return sum;
     }
 }

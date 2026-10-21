@@ -25,13 +25,27 @@ class ReservationTest {
     // Дополнительная проверка реализации: переход состояния удержания RESERVED → ROLLED_BACK.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Reservation.java:70.
     @Test
-    void linksRollbackToReservationAndMarksItRolledBack() {
+    void shouldLinkRollbackWhenReservationStartsRollback() {
+        // Arrange
+        // Act
         ReservationRollback rollback = reservation.startRollback(new BigDecimal("40"));
+
+        // Assert
         assertEquals(reservation.id(), rollback.reservationId());
         assertEquals(reservation.pan(), rollback.pan());
         assertEquals(reservation.rrn(), rollback.rrn());
         assertEquals(new BigDecimal("40"), rollback.rollbackAmount());
+    }
+
+    @Test
+    void shouldMarkReservationAsRolledBackWhenRollbackMatches() {
+        // Arrange
+        ReservationRollback rollback = reservation.startRollback(new BigDecimal("40"));
+
+        // Act
         Reservation updated = reservation.rolledBack(rollback);
+
+        // Assert
         assertEquals(ReservationStatus.ROLLED_BACK, updated.status());
         assertEquals(reservation.id(), updated.id());
         assertEquals(ReservationStatus.RESERVED, reservation.status());
@@ -42,8 +56,12 @@ class ReservationTest {
     // Дополнительная проверка реализации: повторный возврат уже возвращённого удержания отклоняется.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Reservation.java:49.
     @Test
-    void rejectsSecondRollback() {
+    void shouldRejectRollbackWhenReservationIsAlreadyRolledBack() {
+        // Arrange
+        // Act
         Reservation updated = reservation.rolledBack(reservation.startRollback(new BigDecimal("40")));
+
+        // Assert
         assertThrows(RollbackAlreadySatisfiedException.class, () -> updated.startRollback(new BigDecimal("40")));
     }
 
@@ -52,9 +70,12 @@ class ReservationTest {
     // Дополнительная проверка реализации: возврат должен ссылаться на текущее удержание.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Reservation.java:70.
     @Test
-    void rejectsRollbackForAnotherReservation() {
+    void shouldRejectRollbackWhenItBelongsToAnotherReservation() {
+        // Arrange
         ReservationRollback foreign = new ReservationRollback(UUID.randomUUID(), UUID.randomUUID(),
                 reservation.pan(), BigDecimal.ONE, reservation.rrn(), Instant.parse("2026-10-04T12:00:00Z"));
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> reservation.rolledBack(foreign));
     }
 }

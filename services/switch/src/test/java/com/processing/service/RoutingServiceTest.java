@@ -28,8 +28,13 @@ class RoutingServiceTest {
     // Требование: tz/03-switch.md:34 — раздел 2, шаги 1–2: BIN определяет issuerId.
     @ParameterizedTest
     @CsvSource({"400000, BANK001", "400001, BANK002", "400002, BANK003", "400003, BANK004", "400004, BANK005"})
-    void resolvesIssuerFromFirstSixDigits(String bin, String issuer) {
-        assertEquals(issuer, routing.getIssuerIdByPan(bin + "1234567890"));
+    void shouldResolveIssuerWhenBinIsKnown(String bin, String issuer) {
+        // Arrange
+        // Act
+        String actual = routing.getIssuerIdByPan(bin + "1234567890");
+
+        // Assert
+        assertEquals(issuer, actual);
     }
 
     // Switch: без шести цифр BIN невозможно выбрать маршрут, поэтому не возвращаем случайный issuerId.
@@ -38,16 +43,21 @@ class RoutingServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"4", "40000", "9999991234567890"})
-    void rejectsPanWithoutKnownBin(String pan) {
+    void shouldRejectPanWhenBinIsMissingOrUnknown(String pan) {
+        // Arrange
+        // Act & Assert
         assertThrows(UnknownBinException.class, () -> routing.getIssuerIdByPan(pan));
     }
 
     // Switch: пустая таблица маршрутов не должна пропускать транзакцию к произвольному эмитенту.
     // Требование: tz/03-switch.md:110 — раздел 4, отказ при неизвестном BIN.
     @Test
-    void rejectsWhenRoutingTableIsEmpty() {
+    void shouldRejectWhenRoutingTableIsEmpty() {
+        // Arrange
         RoutingService empty = new RoutingService(
                 new SwitchProperties("test", Map.of(), null, null, null, null, null, null));
+
+        // Act & Assert
         assertThrows(UnknownBinException.class, () -> empty.getIssuerIdByPan("4000001234567899"));
     }
 }

@@ -7,12 +7,12 @@ import com.processing.common.dto.transactionlogger.TransactionRequest;
 import com.processing.common.dto.transactionlogger.TransactionStatus;
 import com.processing.exception.AuthorizationException;
 import com.processing.exception.UnknownBinException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -46,13 +46,19 @@ class RouteServiceTest {
     @Mock private AuthorizationClient authorization;
     @Mock private AcquiringFeeClient fees;
     @Mock private LoggerClient logger;
-    @InjectMocks private RouteService service;
+    private RouteService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new RouteService(routing, authorization, fees, logger);
+    }
 
     // Switch: успешный маршрут передаёт issuerId и сохраняет бизнес-данные транзакции в событии Logger.
     // Требование: tz/03-switch.md:34 — раздел 2, шаги 3–7: авторизация и логирование.
     // Требование: tz/03-switch.md:65 — раздел 3, поля события транзакции.
     @Test
-    void routesApprovedTransactionAndLogsItsBusinessFields() {
+    void shouldLogBusinessFieldsWhenTransactionIsApproved() {
+        // Arrange
         AuthorizationRequest request = request();
         AuthorizationResponse approved = approved();
         prepareAuthorization(approved);
@@ -60,8 +66,11 @@ class RouteServiceTest {
                 request.terminalId(), request.amount())).thenReturn(new BigDecimal("2"));
         when(logger.log(any())).thenReturn(true);
 
-        assertSame(approved, service.route(request));
+        // Act
+        AuthorizationResponse result = service.route(request);
 
+        // Assert
+        assertSame(approved, result);
         verify(authorization).authorize(request.withIssuerId("BANK001"));
         ArgumentCaptor<TransactionRequest> event = ArgumentCaptor.forClass(TransactionRequest.class);
         verify(logger).log(event.capture());
@@ -90,10 +99,15 @@ class RouteServiceTest {
     // Switch: неизвестный BIN даёт код 14 и не вызывает авторизацию или расчёт комиссии.
     // Требование: tz/03-switch.md:110 — раздел 4, неизвестный BIN даёт decline 14.
     @Test
-    void declinesUnknownBinWithoutCallingAuthorization() {
+    void shouldDeclineWithoutAuthorizationWhenBinIsUnknown() {
+        // Arrange
         when(routing.getIssuerIdByPan(request().pan())).thenThrow(new UnknownBinException("400000"));
         when(logger.log(any())).thenReturn(true);
+
+        // Act
         AuthorizationResponse result = service.route(request());
+
+        // Assert
         assertEquals("DECLINED", result.status());
         assertEquals("14", result.responseCode());
         assertEquals("CARD_NOT_FOUND", result.declineReason());
@@ -105,11 +119,16 @@ class RouteServiceTest {
     // Требование: tz/03-switch.md:110 — раздел 4, недоступность Authorization даёт decline 05.
     // Граница покрытия: исчерпание retry имитируется клиентом; сами три попытки здесь не проверяются.
     @Test
-    void declinesWhenAuthorizationIsUnavailable() {
+    void shouldDeclineWhenAuthorizationIsUnavailable() {
+        // Arrange
         when(routing.getIssuerIdByPan(request().pan())).thenReturn("BANK001");
         when(authorization.authorize(any())).thenThrow(new AuthorizationException("000001", 3, "timeout"));
         when(logger.log(any())).thenReturn(true);
+
+        // Act
         AuthorizationResponse result = service.route(request());
+
+        // Assert
         assertEquals("DECLINED", result.status());
         assertEquals("05", result.responseCode());
         verifyNoInteractions(fees);
@@ -120,12 +139,18 @@ class RouteServiceTest {
     // Требование: tz/03-switch.md:110 — раздел 4, пункт 3: отказ логирования для DECLINED.
     // Требование: tz/03-switch.md:34 — раздел 2, шаг 7: возврат ответа авторизации.
     @Test
-    void preservesIssuerDeclineEvenWhenLoggingFails() {
+    void shouldPreserveIssuerDeclineWhenLoggingFails() {
+        // Arrange
         AuthorizationResponse declined = new AuthorizationResponse("0110", "000001", null, null,
                 "51", "DECLINED", "INSUFFICIENT_FUNDS", 0);
         prepareAuthorization(declined);
         when(logger.log(any())).thenReturn(false);
-        assertSame(declined, service.route(request()));
+
+        // Act
+        AuthorizationResponse result = service.route(request());
+
+        // Assert
+        assertSame(declined, result);
         ArgumentCaptor<TransactionRequest> event = ArgumentCaptor.forClass(TransactionRequest.class);
         verify(logger).log(event.capture());
         assertEquals(TransactionStatus.DECLINED, event.getValue().status());
@@ -138,11 +163,16 @@ class RouteServiceTest {
     // Требование: tz/03-switch.md:65 — раздел 3, компенсация при отсутствии подтверждения Logger.
     @ParameterizedTest
     @MethodSource("rollbackOutcomes")
-    void compensatesApprovedTransactionWhenLoggingFails(RollbackResponse rollback) {
+    void shouldCompensateApprovedTransactionWhenLoggingFails(RollbackResponse rollback) {
+        // Arrange
         prepareAuthorization(approved());
         when(logger.log(any())).thenReturn(false);
         when(authorization.rollback(any(), eq(approved().rrn()))).thenReturn(rollback);
+
+        // Act
         AuthorizationResponse result = service.route(request());
+
+        // Assert
         assertEquals("DECLINED", result.status());
         assertEquals("96", result.responseCode());
         var order = inOrder(logger, authorization);

@@ -27,14 +27,18 @@ class TransactionRequestValidatorTest {
     // Gateway: корректный запрос должен пройти все проверки входного контракта.
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @Test
-    void acceptsValidTransaction() {
+    void shouldAcceptTransactionWhenRequestIsValid() {
+        // Arrange
+        // Act & Assert
         assertDoesNotThrow(() -> validator.validate(validRequest().build()));
     }
 
     // Gateway: отсутствие тела отклоняется понятной ошибкой вместо NullPointerException.
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @Test
-    void rejectsMissingBody() {
+    void shouldRejectTransactionWhenBodyIsMissing() {
+        // Arrange
+        // Act & Assert
         assertInvalid(null, "Request body");
     }
 
@@ -43,7 +47,9 @@ class TransactionRequestValidatorTest {
     // Контракт обязательных полей: docs/api-spec.md:289 — модель AuthorizationRequest.
     @ParameterizedTest
     @MethodSource("missingRequiredFields")
-    void rejectsMissingRequiredField(AuthorizationRequest request, String field) {
+    void shouldRejectTransactionWhenRequiredFieldIsMissing(AuthorizationRequest request, String field) {
+        // Arrange
+        // Act & Assert
         assertInvalid(request, field);
     }
 
@@ -67,16 +73,25 @@ class TransactionRequestValidatorTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     // Контракт обязательных полей: docs/api-spec.md:289 — модель AuthorizationRequest.
     @ParameterizedTest
-    @ValueSource(strings = {"", " ", "\t"})
-    void rejectsBlankRequiredFields(String blank) {
-        for (AuthorizationRequest request : new AuthorizationRequest[]{
-                validRequest().mti(blank).build(), validRequest().stan(blank).build(),
-                validRequest().pan(blank).build(), validRequest().processingCode(blank).build(),
-                validRequest().currencyCode(blank).build(), validRequest().terminalId(blank).build(),
-                validRequest().merchantId(blank).build(), validRequest().mcc(blank).build(),
-                validRequest().acquirerId(blank).build()}) {
-            assertThrows(TransactionValidationException.class, () -> validator.validate(request));
-        }
+    @MethodSource("blankRequiredFields")
+    void shouldRejectTransactionWhenRequiredFieldIsBlank(AuthorizationRequest request, String field) {
+        // Arrange
+        // Act & Assert
+        assertInvalid(request, field);
+    }
+
+    static Stream<Object[]> blankRequiredFields() {
+        return Stream.of("", " ", "\t").flatMap(blank -> Stream.of(
+                new Object[]{validRequest().mti(blank).build(), "mti"},
+                new Object[]{validRequest().stan(blank).build(), "stan"},
+                new Object[]{validRequest().pan(blank).build(), "pan"},
+                new Object[]{validRequest().processingCode(blank).build(), "processingCode"},
+                new Object[]{validRequest().currencyCode(blank).build(), "currencyCode"},
+                new Object[]{validRequest().terminalId(blank).build(), "terminalId"},
+                new Object[]{validRequest().merchantId(blank).build(), "merchantId"},
+                new Object[]{validRequest().mcc(blank).build(), "mcc"},
+                new Object[]{validRequest().acquirerId(blank).build(), "acquirerId"}
+        ));
     }
 
     // Gateway: PAN должен содержать ровно 16 цифр, поэтому проверяем обе границы длины и символы.
@@ -84,7 +99,9 @@ class TransactionRequestValidatorTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"400000123456789", "40000012345678901", "400000123456789X"})
-    void rejectsMalformedPan(String pan) {
+    void shouldRejectTransactionWhenPanIsMalformed(String pan) {
+        // Arrange
+        // Act & Assert
         assertInvalid(validRequest().pan(pan).build(), "pan");
     }
 
@@ -92,7 +109,9 @@ class TransactionRequestValidatorTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @ParameterizedTest
     @ValueSource(strings = {"0400", "0110", "100", "ABCD"})
-    void rejectsUnsupportedMti(String mti) {
+    void shouldRejectTransactionWhenMtiIsUnsupported(String mti) {
+        // Arrange
+        // Act & Assert
         assertInvalid(validRequest().mti(mti).build(), "mti");
     }
 
@@ -100,14 +119,18 @@ class TransactionRequestValidatorTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @ParameterizedTest
     @ValueSource(strings = {"0", "0.00", "-1"})
-    void rejectsNonPositiveAmount(String amount) {
+    void shouldRejectTransactionWhenAmountIsNotPositive(String amount) {
+        // Arrange
+        // Act & Assert
         assertInvalid(validRequest().amount(new BigDecimal(amount)).build(), "amount");
     }
 
     // Gateway: положительная сумма на границе 1 копейки допустима.
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @Test
-    void acceptsSmallestWholeKopeckAmount() {
+    void shouldAcceptTransactionWhenAmountIsOneKopeck() {
+        // Arrange
+        // Act & Assert
         assertDoesNotThrow(() -> validator.validate(validRequest().amount(BigDecimal.ONE).build()));
     }
 
@@ -115,7 +138,9 @@ class TransactionRequestValidatorTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @ParameterizedTest
     @ValueSource(strings = {"64", "6430"})
-    void rejectsWrongCurrencyLength(String currency) {
+    void shouldRejectTransactionWhenCurrencyLengthIsInvalid(String currency) {
+        // Arrange
+        // Act & Assert
         assertInvalid(validRequest().currencyCode(currency).build(), "currencyCode");
     }
 
@@ -123,7 +148,9 @@ class TransactionRequestValidatorTest {
     // Требование: tz/02-gateway.md:40 — раздел 2, валидация входной транзакции.
     @ParameterizedTest
     @ValueSource(strings = {"541", "54110", "ABCD"})
-    void rejectsMalformedMcc(String mcc) {
+    void shouldRejectTransactionWhenMccIsMalformed(String mcc) {
+        // Arrange
+        // Act & Assert
         assertInvalid(validRequest().mcc(mcc).build(), "mcc");
     }
 

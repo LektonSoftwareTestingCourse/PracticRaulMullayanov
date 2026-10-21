@@ -2,12 +2,15 @@ package com.processing.gateway.circuitbreaker;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,28 +36,59 @@ class InMemoryCircuitBreakerTest {
     // Требование: tz/02-gateway.md:115 — дополнительные задания, Circuit Breaker.
     // Дополнительная проверка реализации: порог ошибок и независимое состояние downstream-сервисов.
     // Основание: services/gateway/src/main/java/com/processing/gateway/circuitbreaker/InMemoryCircuitBreaker.java:110.
+    @ParameterizedTest
+    @CsvSource({"0, true", "1, true", "2, false"})
+    void shouldOpenCircuitWhenFailureThresholdIsReached(int failures, boolean expected) {
+        // Arrange
+        recordFailures(failures);
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertEquals(expected, allowed);
+    }
+
     @Test
-    void opensAtFailureThresholdOnlyForFailedService() {
-        assertTrue(breaker.allowRequest("switch"));
-        breaker.recordFailure("switch");
-        assertTrue(breaker.allowRequest("switch"));
-        breaker.recordFailure("switch");
-        assertFalse(breaker.allowRequest("switch"));
-        assertTrue(breaker.allowRequest("cms"));
+    void shouldAllowOtherServiceWhenSwitchCircuitIsOpen() {
+        // Arrange
+        openCircuit();
+
+        // Act
+        boolean allowed = breaker.allowRequest("cms");
+
+        // Assert
+        assertTrue(allowed);
     }
 
     // Gateway: до истечения интервала запрос запрещён, на границе разрешён только один probe.
     // Требование: tz/02-gateway.md:115 — дополнительные задания, Circuit Breaker.
     // Дополнительная проверка реализации: после интервала ожидания допускается только один probe.
     // Основание: services/gateway/src/main/java/com/processing/gateway/circuitbreaker/InMemoryCircuitBreaker.java:65.
-    @Test
-    void allowsSingleProbeAtExactTimeoutBoundary() {
+    @ParameterizedTest
+    @CsvSource({"9999999999, false", "10000000000, true"})
+    void shouldAllowProbeWhenOpenTimeoutHasElapsed(long elapsedNanos, boolean expected) {
+        // Arrange
         openCircuit();
-        when(clock.instant()).thenReturn(START.plusSeconds(10).minusNanos(1));
-        assertFalse(breaker.allowRequest("switch"));
-        when(clock.instant()).thenReturn(START.plusSeconds(10));
-        assertTrue(breaker.allowRequest("switch"));
-        assertFalse(breaker.allowRequest("switch"));
+        when(clock.instant()).thenReturn(START.plusNanos(elapsedNanos));
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertEquals(expected, allowed);
+    }
+
+    @Test
+    void shouldRejectProbeWhenAnotherProbeIsInFlight() {
+        // Arrange
+        prepareProbe();
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertFalse(allowed);
     }
 
     // Gateway: успешный probe закрывает контур и сбрасывает накопленные ошибки.
@@ -62,31 +96,36 @@ class InMemoryCircuitBreakerTest {
     // Дополнительная проверка реализации: успех закрывает контур и сбрасывает счётчик ошибок.
     // Основание: services/gateway/src/main/java/com/processing/gateway/circuitbreaker/InMemoryCircuitBreaker.java:93.
     @Test
-    void closesAfterSuccessfulProbeAndResetsFailures() {
-        openCircuit();
-        when(clock.instant()).thenReturn(START.plusSeconds(10));
-        assertTrue(breaker.allowRequest("switch"));
+    void shouldResetFailuresWhenProbeSucceeds() {
+        // Arrange
+        prepareProbe();
         breaker.recordSuccess("switch");
-        assertTrue(breaker.allowRequest("switch"));
-        assertTrue(breaker.allowRequest("switch"));
         breaker.recordFailure("switch");
-        assertTrue(breaker.allowRequest("switch"));
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertTrue(allowed);
     }
 
     // Gateway: неудачный probe начинает новый полный интервал ожидания.
     // Требование: tz/02-gateway.md:115 — дополнительные задания, Circuit Breaker.
     // Дополнительная проверка реализации: неудачный probe повторно открывает контур.
     // Основание: services/gateway/src/main/java/com/processing/gateway/circuitbreaker/InMemoryCircuitBreaker.java:110.
-    @Test
-    void reopensAfterFailedProbe() {
-        openCircuit();
-        when(clock.instant()).thenReturn(START.plusSeconds(10));
-        assertTrue(breaker.allowRequest("switch"));
+    @ParameterizedTest
+    @CsvSource({"9, false", "10, true"})
+    void shouldRestartTimeoutWhenProbeFails(long secondsSinceFailure, boolean expected) {
+        // Arrange
+        prepareProbe();
         breaker.recordFailure("switch");
-        when(clock.instant()).thenReturn(START.plusSeconds(19));
-        assertFalse(breaker.allowRequest("switch"));
-        when(clock.instant()).thenReturn(START.plusSeconds(20));
-        assertTrue(breaker.allowRequest("switch"));
+        when(clock.instant()).thenReturn(START.plusSeconds(10 + secondsSinceFailure));
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertEquals(expected, allowed);
     }
 
     // Gateway: отмена probe освобождает слот и не меняет состояние на успешное.
@@ -94,13 +133,28 @@ class InMemoryCircuitBreakerTest {
     // Дополнительная проверка реализации: отмена probe освобождает слот без изменения счётчиков.
     // Основание: services/gateway/src/main/java/com/processing/gateway/circuitbreaker/InMemoryCircuitBreaker.java:153.
     @Test
-    void releasesCancelledProbe() {
+    void shouldReleaseProbeSlotWhenProbeIsCancelled() {
+        // Arrange
+        prepareProbe();
+        breaker.releaseRequest("switch");
+
+        // Act
+        boolean allowed = breaker.allowRequest("switch");
+
+        // Assert
+        assertTrue(allowed);
+    }
+
+    private void recordFailures(int failures) {
+        for (int index = 0; index < failures; index++) {
+            breaker.recordFailure("switch");
+        }
+    }
+
+    private void prepareProbe() {
         openCircuit();
         when(clock.instant()).thenReturn(START.plusSeconds(10));
-        assertTrue(breaker.allowRequest("switch"));
-        breaker.releaseRequest("switch");
-        assertTrue(breaker.allowRequest("switch"));
-        assertFalse(breaker.allowRequest("switch"));
+        breaker.allowRequest("switch");
     }
 
     private void openCircuit() {

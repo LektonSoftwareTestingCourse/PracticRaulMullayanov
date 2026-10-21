@@ -23,10 +23,10 @@ import com.processing.cardmanagement.repositories.CardRepository;
 import com.processing.cardmanagement.repositories.ReservationRepository;
 import com.processing.cardmanagement.repositories.ReservationRollbackRepository;
 import com.processing.cardmanagement.services.retries.RetryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -75,13 +75,20 @@ class CardServiceImplTest {
     @Mock private BinIssuerService binIssuerService;
     @Mock private RetryService retryService;
     @Mock private TransactionRunner transactions;
-    @InjectMocks private CardServiceImpl service;
+    private CardServiceImpl service;
+
+    @BeforeEach
+    void setUp() {
+        service = new CardServiceImpl(cards, reservations, rollbacks, settings, defaults, panGenerator,
+                notifier, binIssuerService, retryService, transactions);
+    }
 
     // Card Management: создание назначает ACTIVE и срок +3 года, сохраняя BIN, эмитента, валюту и суммы.
     // Требование: tz/05-card-management.md:32 — раздел 2, POST: PAN, ACTIVE, срок +3 года и сохранение.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-01.
     @Test
-    void createsActiveCardWithRequestedBusinessFields() {
+    void shouldCreateActiveCardWhenBusinessFieldsAreValid() {
+        // Arrange
         YearMonth creationMonth = YearMonth.of(2026, 10);
         YearMonth expiry = YearMonth.of(2029, 10);
         when(binIssuerService.getIssuerId("400000")).thenReturn("BANK001");
@@ -92,8 +99,12 @@ class CardServiceImplTest {
         when(cards.create(any(Card.class))).thenAnswer(call -> call.getArgument(0));
         try (MockedStatic<YearMonth> months = mockStatic(YearMonth.class, CALLS_REAL_METHODS)) {
             months.when(YearMonth::now).thenReturn(creationMonth);
+
+            // Act
             Card created = service.createCard("400000", "IVAN IVANOV", "643",
                     new BigDecimal("1000"), new BigDecimal("30000"), new BigDecimal("100"));
+
+            // Assert
             assertEquals(PAN, created.pan());
             assertEquals("400000", created.bin());
             assertEquals("BANK001", created.issuerId());
@@ -114,10 +125,16 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:54 — раздел 2, GET /api/cards/{pan}: получение карты.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-02.
     @Test
-    void returnsExistingCard() {
+    void shouldReturnCardWhenItExists() {
+        // Arrange
         Card card = card();
         when(cards.findByPan(PAN)).thenReturn(Optional.of(card));
-        assertSame(card, service.getCard(PAN));
+
+        // Act
+        Card actual = service.getCard(PAN);
+
+        // Assert
+        assertSame(card, actual);
         verifyNoInteractions(notifier);
     }
 
@@ -125,8 +142,11 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:54 — раздел 2, GET /api/cards/{pan}: карта не найдена.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-03.
     @Test
-    void rejectsMissingCard() {
+    void shouldRejectWhenCardDoesNotExist() {
+        // Arrange
         when(cards.findByPan(PAN)).thenReturn(Optional.empty());
+
+        // Act & Assert
         assertThrows(CardNotFoundException.class, () -> service.getCard(PAN));
     }
 
@@ -135,12 +155,17 @@ class CardServiceImplTest {
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-05.
     // Граница покрытия: проверяется передача настройки, а не чтение окружения Docker Compose.
     @Test
-    void usesConfiguredPaginationDefaults() {
+    void shouldUseConfiguredPaginationWhenParametersAreMissing() {
+        // Arrange
         when(defaults.pageLimit()).thenReturn(50);
         when(defaults.pageOffset()).thenReturn(0L);
         when(cards.findCards(50, 0L, null, null, null, null, null)).thenReturn(List.of(card()));
-        assertEquals(List.of(card()), service.getCards(null, null, null, null, null, null, null));
-        verify(cards).findCards(50, 0L, null, null, null, null, null);
+
+        // Act
+        List<Card> actual = service.getCards(null, null, null, null, null, null, null);
+
+        // Assert
+        assertEquals(List.of(card()), actual);
     }
 
     // Card Management: верхняя граница страницы допустима, фильтры сохраняются при передаче.
@@ -148,13 +173,18 @@ class CardServiceImplTest {
     // Дополнительная проверка реализации: настроенный максимальный размер страницы включён в допустимый диапазон.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/services/CardServiceImpl.java:119.
     @Test
-    void acceptsMaximumPageSizeAndPassesFilters() {
+    void shouldPassFiltersWhenPageSizeIsAtMaximum() {
+        // Arrange
         when(settings.maxPageLimit()).thenReturn(100);
         when(cards.findCards(100, 5L, CardStatus.ACTIVE, "400000", "BANK001", null, null))
                 .thenReturn(List.of(card()));
-        assertEquals(List.of(card()), service.getCards(100, 5L, CardStatus.ACTIVE,
-                "400000", "BANK001", null, null));
-        verify(cards).findCards(100, 5L, CardStatus.ACTIVE, "400000", "BANK001", null, null);
+
+        // Act
+        List<Card> actual = service.getCards(100, 5L, CardStatus.ACTIVE,
+                "400000", "BANK001", null, null);
+
+        // Assert
+        assertEquals(List.of(card()), actual);
     }
 
     // Card Management: превышение размера страницы отклоняется до обращения к БД.
@@ -162,8 +192,11 @@ class CardServiceImplTest {
     // Дополнительная проверка реализации: превышение настроенного maxPageLimit отклоняется до запроса БД.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/services/CardServiceImpl.java:119.
     @Test
-    void rejectsPageAboveMaximum() {
+    void shouldRejectPageWhenSizeExceedsMaximum() {
+        // Arrange
         when(settings.maxPageLimit()).thenReturn(100);
+
+        // Act & Assert
         assertThrows(TooLargeLimitException.class, () -> service.getCards(101, null, null, null, null, null, null));
         verifyNoInteractions(cards);
     }
@@ -173,11 +206,16 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:216 — Outbox: событие изменения карты.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-10.
     @Test
-    void patchesOnlySuppliedFields() {
+    void shouldPreserveOtherFieldsWhenPatchingCard() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(cards.update(any(Card.class))).thenAnswer(call -> call.getArgument(0));
+
+        // Act
         Card updated = service.patchCard(PAN, CardStatus.BLOCKED, null, null, null);
+
+        // Assert
         assertEquals(CardStatus.BLOCKED, updated.status());
         assertEquals(card().dailyLimit(), updated.dailyLimit());
         assertEquals(card().monthlyLimit(), updated.monthlyLimit());
@@ -192,13 +230,18 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:216 — Outbox: событие изменения карты.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-15.
     @Test
-    void reservesAndPublishesEventAfterSaving() {
+    void shouldPublishReserveEventWhenReservationIsSaved() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.isUnique(RRN, PAN)).thenReturn(true);
         when(reservations.save(any(Reservation.class))).thenAnswer(call -> call.getArgument(0));
         when(cards.update(any(Card.class))).thenAnswer(call -> call.getArgument(0));
+
+        // Act
         Card updated = service.reserve(PAN, AMOUNT, RRN);
+
+        // Assert
         assertEquals(new BigDecimal("60"), updated.availableBalance());
         ArgumentCaptor<Reservation> saved = ArgumentCaptor.forClass(Reservation.class);
         var order = inOrder(reservations, cards, notifier);
@@ -213,10 +256,13 @@ class CardServiceImplTest {
     // Card Management: повторный RRN для той же карты не должен повторно списать баланс.
     // Требование идемпотентности: docs/api/openapi.yaml:1177 — ReserveRequest, поле rrn.
     @Test
-    void rejectsDuplicateReservationWithoutSavingOrPublishing() {
+    void shouldAvoidSideEffectsWhenReservationIsDuplicate() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.isUnique(RRN, PAN)).thenReturn(false);
+
+        // Act & Assert
         assertThrows(ReservationAlreadyExistsException.class, () -> service.reserve(PAN, AMOUNT, RRN));
         verify(reservations, never()).save(any());
         verify(cards, never()).update(any());
@@ -228,9 +274,12 @@ class CardServiceImplTest {
     // Контракт CMS: services/card-management/README.md:281 — ошибка недостатка средств.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-16.
     @Test
-    void rejectsInsufficientBalanceWithoutSideEffects() {
+    void shouldAvoidSideEffectsWhenBalanceIsInsufficient() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
+
+        // Act & Assert
         assertThrows(InsufficientFundsException.class,
                 () -> service.reserve(PAN, new BigDecimal("101"), RRN));
         verify(cards, never()).update(any());
@@ -242,11 +291,14 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:216 — Outbox: событие связано с изменением карты.
     // Граница покрытия: запрет последующих вызовов после ошибки; атомарность БД здесь не проверяется.
     @Test
-    void stopsReservationWhenPersistenceFails() {
+    void shouldStopReservationWhenPersistenceFails() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.isUnique(RRN, PAN)).thenReturn(true);
         when(reservations.save(any())).thenThrow(new IllegalStateException("storage unavailable"));
+
+        // Act & Assert
         assertThrows(IllegalStateException.class, () -> service.reserve(PAN, AMOUNT, RRN));
         verify(cards, never()).update(any());
         verifyNoInteractions(notifier);
@@ -257,14 +309,19 @@ class CardServiceImplTest {
     // Контракт CMS: services/card-management/README.md:244 — POST /api/cards/{pan}/rollback.
     // Требование: tz/05-card-management.md:216 — Outbox: событие изменения карты.
     @Test
-    void rollsBackReservationAndPublishesEventAfterSaving() {
+    void shouldPublishRollbackEventWhenRollbackIsSaved() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.findByRrnAndPanForUpdate(RRN, PAN))
                 .thenReturn(Optional.of(new Reservation(PAN, AMOUNT, RRN)));
         when(rollbacks.save(any(ReservationRollback.class))).thenAnswer(call -> call.getArgument(0));
         when(cards.update(any(Card.class))).thenAnswer(call -> call.getArgument(0));
+
+        // Act
         Card updated = service.rollback(PAN, AMOUNT, RRN);
+
+        // Assert
         assertEquals(new BigDecimal("140"), updated.availableBalance());
         ArgumentCaptor<Reservation> saved = ArgumentCaptor.forClass(Reservation.class);
         var order = inOrder(rollbacks, reservations, cards, notifier);
@@ -280,10 +337,13 @@ class CardServiceImplTest {
     // Дополнительная проверка реализации: отсутствующее удержание не создаёт возврат.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/services/CardServiceImpl.java:213.
     @Test
-    void rejectsRollbackOfMissingReservation() {
+    void shouldRejectRollbackWhenReservationIsMissing() {
+        // Arrange
         prepareTransaction();
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.findByRrnAndPanForUpdate(RRN, PAN)).thenReturn(Optional.empty());
+
+        // Act & Assert
         assertThrows(ReservationNotFoundException.class, () -> service.rollback(PAN, AMOUNT, RRN));
         verify(cards, never()).update(any());
         verifyNoInteractions(rollbacks, notifier);
@@ -292,12 +352,15 @@ class CardServiceImplTest {
     // Card Management: уже возвращённое удержание не создаёт второе зачисление.
     // Требование идемпотентности: docs/api/openapi.yaml:1192 — RollbackRequest.
     @Test
-    void rejectsRepeatedRollbackWithoutSideEffects() {
+    void shouldAvoidSideEffectsWhenRollbackIsRepeated() {
+        // Arrange
         prepareTransaction();
         Reservation reservation = new Reservation(PAN, AMOUNT, RRN);
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
         when(reservations.findByRrnAndPanForUpdate(RRN, PAN))
                 .thenReturn(Optional.of(reservation.rolledBack(reservation.startRollback(AMOUNT))));
+
+        // Act & Assert
         assertThrows(RollbackAlreadySatisfiedException.class, () -> service.rollback(PAN, AMOUNT, RRN));
         verify(cards, never()).update(any());
         verifyNoInteractions(rollbacks, notifier);
@@ -308,16 +371,21 @@ class CardServiceImplTest {
     // Требование: tz/05-card-management.md:216 — Outbox: событие удаления карты.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-12.
     @Test
-    void softDeletesThroughRepository() {
+    void shouldPersistDeletedStatusWhenDeletingCard() {
+        // Arrange
         doAnswer(call -> {
             call.<Runnable>getArgument(0).run();
             return null;
         }).when(transactions).run(any(Runnable.class));
         when(cards.findByPanForUpdate(PAN)).thenReturn(Optional.of(card()));
+
+        // Act
         service.deleteCard(PAN);
         ArgumentCaptor<Card> saved = ArgumentCaptor.forClass(Card.class);
         var order = inOrder(cards, notifier);
         order.verify(cards).update(saved.capture());
+
+        // Assert
         assertEquals(CardStatus.DELETED, saved.getValue().status());
         assertEquals(card().availableBalance(), saved.getValue().availableBalance());
         order.verify(notifier).notifyListeners(new CardServiceDeletionEvent(PAN));

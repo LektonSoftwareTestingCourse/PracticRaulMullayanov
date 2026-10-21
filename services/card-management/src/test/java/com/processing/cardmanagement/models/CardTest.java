@@ -36,9 +36,14 @@ class CardTest {
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-15.
     @ParameterizedTest
     @CsvSource({"99, 1", "100, 0"})
-    void reservesUpToAvailableBalance(String amount, String remaining) {
+    void shouldReserveWhenAmountDoesNotExceedBalance(String amount, String remaining) {
+        // Arrange
         Reservation reservation = card.startReservation(new BigDecimal(amount), RRN);
+
+        // Act
         Card updated = card.withReservation(reservation);
+
+        // Assert
         assertAll(
                 () -> assertEquals(0, updated.availableBalance().compareTo(new BigDecimal(remaining))),
                 () -> assertEquals(PAN, reservation.pan()),
@@ -57,7 +62,9 @@ class CardTest {
     // Контракт CMS: services/card-management/README.md:281 — ошибка недостатка средств.
     // Связанные тест-кейсы: docs/practice-2/test-design.md, раздел 6.2: CMS-16.
     @Test
-    void rejectsAmountAboveBalance() {
+    void shouldRejectReservationWhenAmountExceedsBalance() {
+        // Arrange
+        // Act & Assert
         assertThrows(InsufficientFundsException.class,
                 () -> card.startReservation(new BigDecimal("101"), RRN));
         assertEquals(new BigDecimal("100"), card.availableBalance());
@@ -69,8 +76,12 @@ class CardTest {
     // Граница покрытия: здесь проверяется защита модели CMS; ответ Authorization проверяется отдельно.
     @ParameterizedTest
     @EnumSource(value = CardStatus.class, names = "ACTIVE", mode = EnumSource.Mode.EXCLUDE)
-    void rejectsReservationForNonActiveCards(CardStatus status) {
+    void shouldRejectReservationWhenCardIsNotActive(CardStatus status) {
+        // Arrange
+        // Act
         Card inactive = card.withData(status, card.dailyLimit(), card.monthlyLimit(), card.availableBalance());
+
+        // Assert
         assertThrows(IllegalStateException.class, () -> inactive.startReservation(BigDecimal.ONE, RRN));
     }
 
@@ -78,10 +89,15 @@ class CardTest {
     // Требование: tz/04-authorization.md:126 — дополнительные задания, Reversal: возврат средств.
     // Контракт CMS: services/card-management/README.md:244 — POST /api/cards/{pan}/rollback.
     @Test
-    void restoresReservedBalance() {
+    void shouldRestoreBalanceWhenReservationIsRolledBack() {
+        // Arrange
         Reservation reservation = card.startReservation(new BigDecimal("40"), RRN);
         Card reserved = card.withReservation(reservation);
+
+        // Act
         Card restored = reserved.withRollback(reservation.startRollback(new BigDecimal("40")));
+
+        // Assert
         assertEquals(card, restored);
         assertEquals(new BigDecimal("60"), reserved.availableBalance());
     }
@@ -91,10 +107,22 @@ class CardTest {
     // Дополнительная проверка реализации: удержание и возврат нельзя применить к чужому PAN.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Card.java:115.
     @Test
-    void rejectsMoneyOperationsForDifferentPan() {
+    void shouldRejectReservationWhenItBelongsToDifferentPan() {
+        // Arrange
         Reservation foreign = new Reservation("4000011234567899", BigDecimal.ONE, RRN);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> card.withReservation(foreign));
-        assertThrows(IllegalArgumentException.class, () -> card.withRollback(foreign.startRollback(BigDecimal.ONE)));
+    }
+
+    @Test
+    void shouldRejectRollbackWhenItBelongsToDifferentPan() {
+        // Arrange
+        Reservation foreign = new Reservation("4000011234567899", BigDecimal.ONE, RRN);
+        ReservationRollback rollback = foreign.startRollback(BigDecimal.ONE);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> card.withRollback(rollback));
     }
 
     // Card Management: отрицательные лимиты и monthlyLimit < dailyLimit противоречат правилам карты.
@@ -103,7 +131,9 @@ class CardTest {
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Card.java:199.
     @ParameterizedTest
     @CsvSource({"-1, 1000", "1000, -1", "1001, 1000"})
-    void rejectsInvalidLimits(String daily, String monthly) {
+    void shouldRejectLimitsWhenTheyViolateCardRules(String daily, String monthly) {
+        // Arrange
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> card.withData(CardStatus.ACTIVE,
                 new BigDecimal(daily), new BigDecimal(monthly), card.availableBalance()));
     }
@@ -114,9 +144,13 @@ class CardTest {
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Card.java:199.
     @ParameterizedTest
     @ValueSource(strings = {"0", "1000"})
-    void acceptsEqualNonNegativeLimits(String limit) {
+    void shouldAcceptLimitsWhenTheyAreEqualAndNonNegative(String limit) {
+        // Arrange
+        // Act
         Card updated = card.withData(CardStatus.BLOCKED, new BigDecimal(limit), new BigDecimal(limit),
                 card.availableBalance());
+
+        // Assert
         assertEquals(new BigDecimal(limit), updated.dailyLimit());
         assertEquals(new BigDecimal(limit), updated.monthlyLimit());
         assertEquals(CardStatus.BLOCKED, updated.status());
@@ -128,12 +162,25 @@ class CardTest {
     // Дополнительная проверка реализации: повторное удаление отклоняется.
     // Основание: services/card-management/src/main/java/com/processing/cardmanagement/models/Card.java:168.
     @Test
-    void softDeletesCardAndRejectsRepeatedDeletion() {
+    void shouldPreserveCardDataWhenSoftDeleting() {
+        // Arrange
+        // Act
         Card deleted = card.deleted();
+
+        // Assert
         assertEquals(CardStatus.DELETED, deleted.status());
         assertEquals(card.id(), deleted.id());
         assertEquals(card.availableBalance(), deleted.availableBalance());
         assertEquals(CardStatus.ACTIVE, card.status());
+    }
+
+    @Test
+    void shouldRejectDeletionWhenCardIsAlreadyDeleted() {
+        // Arrange
+        // Act
+        Card deleted = card.deleted();
+
+        // Assert
         assertThrows(IllegalStateException.class, deleted::deleted);
     }
 }
