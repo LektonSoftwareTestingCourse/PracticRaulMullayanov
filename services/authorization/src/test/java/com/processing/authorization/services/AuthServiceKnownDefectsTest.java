@@ -51,6 +51,7 @@ import static org.mockito.Mockito.when;
 @EnabledIfSystemProperty(named = "runKnownDefects", matches = "true",
         disabledReason = "Известные BUG-P2-002/003/004: для проверки ТЗ используйте -DrunKnownDefects=true")
 class AuthServiceKnownDefectsTest {
+    private static final Instant NOW = Instant.parse("2026-10-04T12:00:00Z");
     private static final String PAN = "4000001234567899";
     @Mock private LimitUsageRepository limits;
     @Mock private AuthorizationEventNotifier notifier;
@@ -75,7 +76,7 @@ class AuthServiceKnownDefectsTest {
         lenient().when(limits.upsertLimitUsage(anyString(), any(), any(), any(), any())).thenReturn(0);
 
         // Act
-        AuthorizationResponse response = service.authorize(request(), Instant.now());
+        AuthorizationResponse response = service.authorize(request(), NOW);
 
         // Assert
         assertEquals("DECLINED", response.status());
@@ -94,7 +95,7 @@ class AuthServiceKnownDefectsTest {
         when(cms.getCard(PAN)).thenThrow(new ServiceUnavailableException("CMS down"));
 
         // Act
-        AuthorizationResponse response = service.authorize(request(), Instant.now());
+        AuthorizationResponse response = service.authorize(request(), NOW);
 
         // Assert
         assertIssuerTimeout(response);
@@ -110,7 +111,7 @@ class AuthServiceKnownDefectsTest {
                 .when(cms).reserve(eq(new BigDecimal("100")), anyString(), eq(PAN));
 
         // Act
-        AuthorizationResponse response = service.authorize(request(), Instant.now());
+        AuthorizationResponse response = service.authorize(request(), NOW);
 
         // Assert
         assertIssuerTimeout(response);

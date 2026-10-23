@@ -62,6 +62,7 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
+    private static final Instant NOW = Instant.parse("2026-10-04T12:00:00Z");
     private static final String PAN = "4000001234567899";
     private static final BigDecimal AMOUNT = new BigDecimal("100");
     private static final LocalDate DATE = LocalDate.of(2026, 10, 4);
@@ -345,7 +346,7 @@ class AuthServiceImplTest {
         RollbackRequest request = new RollbackRequest("627712000001", PAN, AMOUNT);
 
         // Act
-        RollbackResponse response = service.rollback(request, Instant.now());
+        RollbackResponse response = service.rollback(request, NOW);
 
         // Assert
         assertEquals("APPROVED", response.status());
@@ -365,7 +366,7 @@ class AuthServiceImplTest {
         doThrow(new RollbackConflictException("already rolled back")).when(cms).rollback(request);
 
         // Act
-        RollbackResponse response = service.rollback(request, Instant.now());
+        RollbackResponse response = service.rollback(request, NOW);
 
         // Assert
         assertEquals("DECLINED", response.status());
@@ -426,7 +427,7 @@ class AuthServiceImplTest {
     }
 
     private AuthorizationResponse authorize(AuthorizationRequest request) {
-        return service.authorize(request, Instant.now());
+        return service.authorize(request, NOW);
     }
 
     private void verifyNoReserve() {
