@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:36.868547Z",
+  "test": "StrictContractTest#d05CardValidationMustIdentifyItsField / d05CardValidationMustIdentifyItsField()",
+  "method": "POST",
+  "uri": "http://localhost:28080/api/cards",
+  "requestBody": "{\"bin\":\"400000\",\"initialBalance\":100000,\"monthlyLimit\":100000,\"currencyCode\":\"643\",\"cardholderName\":\"RAUL API TEST\",\"dailyLimit\":-1}",
+  "status": 400,
+  "responseHeaders": "X-Request-Id=b7186240-7274-45af-93ea-5173745086a8\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:36 GMT\nDate=Sun, 01 Nov 2026 14:28:36 GMT\nContent-Type=application/json\nContent-Length=178",
+  "responseBody": "{\"error\":\"MethodArgumentNotValidException\",\"message\":\"Value can not be negative\",\"timestamp\":\"2026-11-01T14:28:36.895274713Z\",\"serviceName\":\"card-management\",\"retryAfterMs\":null}"
+}

@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:36.888187Z",
+  "test": "StrictContractTest#d04AuthorizationValidationMustExplainItsField / d04AuthorizationValidationMustExplainItsField()",
+  "method": "POST",
+  "uri": "http://localhost:28083/api/internal/authorize",
+  "requestBody": "{\"mti\":\"0100\",\"stan\":\"12345\",\"pan\":\"4000005649124535\",\"processingCode\":\"000000\",\"amount\":100,\"currencyCode\":\"643\",\"transmissionDateTime\":\"2026-11-01T14:28:36.876Z\",\"terminalId\":\"T2BFC6C4\",\"terminalType\":\"POS\",\"merchantId\":\"M0CEC6750BDF14B\",\"mcc\":\"5411\",\"acquirerId\":\"ACQ001\",\"issuerId\":\"ISS001\"}",
+  "status": 400,
+  "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:28:36 GMT\nConnection=close",
+  "responseBody": "{\"timestamp\":\"2026-11-01T14:28:36.916+00:00\",\"status\":400,\"error\":\"Bad Request\",\"path\":\"/api/internal/authorize\"}"
+}

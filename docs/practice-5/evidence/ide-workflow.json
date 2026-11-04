@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-04",
+  "checks": {
+    "prepare_stack": true,
+    "repeat_start_reuses_stack": true,
+    "full_run_rejects_active_ide_session": true,
+    "selected_api_tests_and_checkstyle": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "original_container_ids_preserved": true,
+    "original_containers_restored_healthy": true,
+    "session_state_removed_after_stop": true
+  },
+  "original_container_count": 12,
+  "source_sha256": {
+    "scripts/api-test-env.py": "98e4f04a1893bc573a7ed9dd3784774b0110d3a4df6e3917f18e6d84c60c16fd",
+    ".vscode/tasks.json": "cfb050c356edbbd48897cbd2902901199e8160dfc0c45ef1a441d68964a982e1",
+    ".vscode/settings.json": "0f2dbc7ea23aa3f39a9dd28e66216896d9ba1765ffcd16168f41a3bc278dcb64"
+  }
+}

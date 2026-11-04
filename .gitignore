@@ -24,6 +24,7 @@ Thumbs.db
 # IDE
 .idea/
 .vscode/
+.api-test-env/
 *.iml
 
 # Maven

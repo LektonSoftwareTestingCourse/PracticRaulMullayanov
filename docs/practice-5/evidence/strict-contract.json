@@ -1,0 +1,126 @@
+{
+  "tests": 18,
+  "failures": 18,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "class": "com.processing.api.StrictContractTest",
+      "tests": 18,
+      "failures": 18,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 13.997,
+      "cases": [
+        {
+          "name": "d07TerminalRequestFromSpecificationMustWorkWithoutTps",
+          "seconds": 0.745,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <200> but was <400>.\n"
+        },
+        {
+          "name": "d02CardResponseMustContainTheDocumentedFields",
+          "seconds": 0.075,
+          "result": "failure",
+          "message": "1 expectation failed.\nJSON path expiryDate doesn't match.\nExpected: a string matching the pattern '[0-9]{4}'\n  Actual: 2029-11\n"
+        },
+        {
+          "name": "d09RollbackCannotCreditMoreThanWasReserved",
+          "seconds": 0.063,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d12FractionalAmountMustHaveAnObservableBalanceEffect",
+          "seconds": 0.173,
+          "result": "failure",
+          "message": "1 expectation failed.\nJSON path availableBalance doesn't match.\nExpected: <99999.99F>\n  Actual: <100000>\n"
+        },
+        {
+          "name": "d01ResponseMtiMustBe0110",
+          "seconds": 0.155,
+          "result": "failure",
+          "message": "1 expectation failed.\nJSON path mti doesn't match.\nExpected: 0110\n  Actual: 0100\n"
+        },
+        {
+          "name": "d08ReserveRequiresAnAmount",
+          "seconds": 0.085,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <500>.\n"
+        },
+        {
+          "name": "d10ReversedDateRangeExplainsTheRule",
+          "seconds": 0.037,
+          "result": "failure",
+          "message": "1 expectation failed.\nJSON path message doesn't match.\nExpected: a string containing \"dateFrom must not be after dateTo\"\n  Actual: \n"
+        },
+        {
+          "name": "d11BinIssuerIdConstraintMustBeActive",
+          "seconds": 0.029,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <201>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[1]",
+          "seconds": 3.113,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[2]",
+          "seconds": 3.067,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[3]",
+          "seconds": 3.07,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[4]",
+          "seconds": 3.175,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[5]",
+          "seconds": 0.049,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[6]",
+          "seconds": 0.014,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[7]",
+          "seconds": 0.026,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d03GatewayMustExplainInvalidFieldLength(String, String)[8]",
+          "seconds": 0.029,
+          "result": "failure",
+          "message": "1 expectation failed.\nExpected status code <400> but was <200>.\n"
+        },
+        {
+          "name": "d05CardValidationMustIdentifyItsField",
+          "seconds": 0.031,
+          "result": "failure",
+          "message": "1 expectation failed.\nJSON path message doesn't match.\nExpected: a string containing \"dailyLimit\"\n  Actual: Value can not be negative\n"
+        },
+        {
+          "name": "d04AuthorizationValidationMustExplainItsField",
+          "seconds": 0.02,
+          "result": "failure",
+          "message": "2 expectations failed.\nJSON path serviceName doesn't match.\nExpected: authorization\n  Actual: null\n\nJSON path message doesn't match.\nExpected: a string containing \"stan\"\n  Actual: null\n"
+        }
+      ]
+    }
+  ]
+}

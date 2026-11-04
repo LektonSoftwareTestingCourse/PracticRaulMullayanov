@@ -1,0 +1,40 @@
+{
+  "command": "RUNS=1 ./scripts/run-api-tests.sh --suspend-main",
+  "junit": {
+    "tests": 405,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suspended_containers": [
+    "95fc014347a0",
+    "481f2ed59efe",
+    "cbb7cdf4f7bb",
+    "7c9a741f2c15",
+    "45a6c53a6900",
+    "1f1d37256bb3",
+    "4039e416994d",
+    "b74a19a0d369",
+    "1f406bd7f32c",
+    "3fd4d7744914",
+    "3919ae6b4c22",
+    "d08bb7a40239"
+  ],
+  "restored_containers": [
+    "95fc014347a0",
+    "481f2ed59efe",
+    "cbb7cdf4f7bb",
+    "7c9a741f2c15",
+    "45a6c53a6900",
+    "1f1d37256bb3",
+    "4039e416994d",
+    "b74a19a0d369",
+    "1f406bd7f32c",
+    "3fd4d7744914",
+    "3919ae6b4c22",
+    "d08bb7a40239"
+  ],
+  "same_container_ids": true,
+  "restored_running_and_healthy": true,
+  "script_sha256": "711384806cbb008f8d26002e470644e07348894d67ac13207e879560b9c19e5f"
+}

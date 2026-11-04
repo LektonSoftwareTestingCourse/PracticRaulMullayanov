@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:24.192003Z",
+  "test": "StrictContractTest#d08ReserveRequiresAnAmount / d08ReserveRequiresAnAmount()",
+  "method": "POST",
+  "uri": "http://localhost:28080/api/cards/4000005613621292/reserve",
+  "requestBody": "{\"rrn\":\"936416800031\"}",
+  "status": 500,
+  "responseHeaders": "X-Request-Id=3000de89-c5b4-4045-8406-2f09bec94805\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:24 GMT\nDate=Sun, 01 Nov 2026 14:28:24 GMT\nContent-Type=application/json\nContent-Length=202",
+  "responseBody": "{\"error\":\"NullPointerException\",\"message\":\"Cannot read field \\\"scale\\\" because \\\"<parameter1>\\\" is null\",\"timestamp\":\"2026-11-01T14:28:24.208837325Z\",\"serviceName\":\"card-management\",\"retryAfterMs\":null}"
+}

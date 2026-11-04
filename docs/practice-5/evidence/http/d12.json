@@ -1,0 +1,44 @@
+{
+  "observations": [
+    {
+      "time": "2026-11-01T14:28:23.807658Z",
+      "test": "StrictContractTest#d12FractionalAmountMustHaveAnObservableBalanceEffect / d12FractionalAmountMustHaveAnObservableBalanceEffect()",
+      "method": "POST",
+      "uri": "http://localhost:28080/api/cards",
+      "requestBody": "{\"bin\":\"400000\",\"initialBalance\":100000,\"monthlyLimit\":100000,\"currencyCode\":\"643\",\"cardholderName\":\"RAUL API TEST\",\"dailyLimit\":10000}",
+      "status": 201,
+      "responseHeaders": "X-Request-Id=0c6b7d59-1d13-4571-9b99-93349e8dbca0\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nContent-Type=application/json\nContent-Length=312",
+      "responseBody": "{\"id\":\"10941f9c-cff2-4849-ae08-be29947cdb15\",\"pan\":\"4000002669968313\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:28:23.823795566Z\"}"
+    },
+    {
+      "time": "2026-11-01T14:28:23.915644Z",
+      "test": "StrictContractTest#d12FractionalAmountMustHaveAnObservableBalanceEffect / d12FractionalAmountMustHaveAnObservableBalanceEffect()",
+      "method": "POST",
+      "uri": "http://localhost:28080/api/transactions",
+      "requestBody": "{\"mti\":\"0100\",\"stan\":\"382401\",\"pan\":\"4000002669968313\",\"processingCode\":\"000000\",\"amount\":0.01,\"currencyCode\":\"643\",\"transmissionDateTime\":\"2026-11-01T14:28:23.821Z\",\"terminalId\":\"TC2C0668\",\"terminalType\":\"POS\",\"merchantId\":\"MF2FD2D4A163445\",\"mcc\":\"5411\",\"acquirerId\":\"ACQ001\",\"issuerId\":\"ISS001\"}",
+      "status": 200,
+      "responseHeaders": "X-Request-Id=974a9a2d-3e2d-45ae-a30c-7d8e22ecfea1\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nContent-Type=application/json\nContent-Length=154",
+      "responseBody": "{\"mti\":\"0100\",\"stan\":\"382401\",\"rrn\":\"630500001109\",\"authCode\":\"UR7U4A\",\"responseCode\":\"00\",\"status\":\"APPROVED\",\"declineReason\":null,\"processingTimeMs\":34}"
+    },
+    {
+      "time": "2026-11-01T14:28:23.946787Z",
+      "test": "StrictContractTest#d12FractionalAmountMustHaveAnObservableBalanceEffect / d12FractionalAmountMustHaveAnObservableBalanceEffect()",
+      "method": "GET",
+      "uri": "http://localhost:28081/api/cards/4000002669968313",
+      "requestBody": null,
+      "status": 200,
+      "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+      "responseBody": "{\"id\":\"10941f9c-cff2-4849-ae08-be29947cdb15\",\"pan\":\"4000002669968313\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:28:23.823796Z\"}"
+    },
+    {
+      "time": "2026-11-01T14:28:23.962760Z",
+      "test": "StrictContractTest#d12FractionalAmountMustHaveAnObservableBalanceEffect / d12FractionalAmountMustHaveAnObservableBalanceEffect()",
+      "method": "DELETE",
+      "uri": "http://localhost:28081/api/cards/4000002669968313",
+      "requestBody": null,
+      "status": 204,
+      "responseHeaders": "Date=Sun, 01 Nov 2026 14:28:23 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+      "responseBody": ""
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "observations": [
+    {
+      "time": "2026-11-01T14:26:02.584645Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "POST",
+      "uri": "http://localhost:28080/api/cards",
+      "requestBody": "{\"currencyCode\":\"643\",\"monthlyLimit\":100000,\"initialBalance\":100000,\"bin\":\"400000\",\"dailyLimit\":10000,\"cardholderName\":\"RAUL API TEST\"}",
+      "status": 201,
+      "responseHeaders": "X-Request-Id=7990e85e-27a4-4778-b215-4185d3911c89\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nContent-Type=application/json\nContent-Length=312",
+      "responseBody": "{\"id\":\"34ca2ff5-6bce-4cea-9a20-5bb43177c9e6\",\"pan\":\"4000008043730295\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:26:02.610314178Z\"}"
+    },
+    {
+      "time": "2026-11-01T14:26:02.595771Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "GET",
+      "uri": "http://localhost:28081/api/cards/4000008043730295",
+      "requestBody": null,
+      "status": 200,
+      "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+      "responseBody": "{\"id\":\"34ca2ff5-6bce-4cea-9a20-5bb43177c9e6\",\"pan\":\"4000008043730295\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:26:02.610314Z\"}"
+    },
+    {
+      "time": "2026-11-01T14:26:02.602080Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "POST",
+      "uri": "http://localhost:28099/__faults/31FFC9CDFA1A4525",
+      "requestBody": "{\"method\":\"GET\",\"status\":200,\"path\":\"/api/cards/4000008043730295\",\"times\":1,\"body\":{\"id\":\"34ca2ff5-6bce-4cea-9a20-5bb43177c9e6\",\"pan\":\"11111111111111111\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:26:02.610314Z\"}}",
+      "status": 201,
+      "responseHeaders": "Server=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nContent-Type=application/json\nContent-Length=26",
+      "responseBody": "{\"id\": \"31FFC9CDFA1A4525\"}"
+    },
+    {
+      "time": "2026-11-01T14:26:02.641025Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "POST",
+      "uri": "http://localhost:28083/api/internal/authorize",
+      "requestBody": "{\"mti\":\"0100\",\"stan\":\"396670\",\"pan\":\"4000008043730295\",\"processingCode\":\"000000\",\"amount\":100,\"currencyCode\":\"643\",\"transmissionDateTime\":\"2026-11-01T14:26:02.605Z\",\"terminalId\":\"TD515CF1\",\"terminalType\":\"POS\",\"merchantId\":\"MDB77A334A24B4B\",\"mcc\":\"5411\",\"acquirerId\":\"ACQ001\",\"issuerId\":\"ISS001\"}",
+      "status": 500,
+      "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nConnection=close",
+      "responseBody": "{\"timestamp\":\"2026-11-01T14:26:02.667+00:00\",\"status\":500,\"error\":\"Internal Server Error\",\"path\":\"/api/internal/authorize\"}"
+    },
+    {
+      "time": "2026-11-01T14:26:02.659072Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "GET",
+      "uri": "http://localhost:28081/api/cards/4000008043730295",
+      "requestBody": null,
+      "status": 200,
+      "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+      "responseBody": "{\"id\":\"34ca2ff5-6bce-4cea-9a20-5bb43177c9e6\",\"pan\":\"4000008043730295\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:26:02.610314Z\"}"
+    },
+    {
+      "time": "2026-11-01T14:26:02.668921Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "DELETE",
+      "uri": "http://localhost:28099/__faults/31FFC9CDFA1A4525",
+      "requestBody": null,
+      "status": 204,
+      "responseHeaders": "Server=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:26:02 GMT\nContent-Type=application/json\nContent-Length=0",
+      "responseBody": ""
+    },
+    {
+      "time": "2026-11-01T14:26:02.674805Z",
+      "test": "DependencyFaultApiTest#databaseFailureCurrentlyLosesDomainResponse / databaseFailureCurrentlyLosesDomainResponse()",
+      "method": "DELETE",
+      "uri": "http://localhost:28081/api/cards/4000008043730295",
+      "requestBody": null,
+      "status": 204,
+      "responseHeaders": "Date=Sun, 01 Nov 2026 14:26:02 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+      "responseBody": ""
+    }
+  ]
+}

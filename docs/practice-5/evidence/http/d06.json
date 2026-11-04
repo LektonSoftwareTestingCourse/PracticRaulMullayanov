@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:24:31.036646Z",
+  "test": "AuxiliaryApiTest#missingPublicRoutesAreRecordedAsDiscrepancies / missingPublicRoutesAreRecordedAsDiscrepancies()",
+  "method": "GET",
+  "uri": "http://localhost:28080/api/simulator/merchants",
+  "requestBody": null,
+  "status": 404,
+  "responseHeaders": "Content-Type=application/json\nContent-Length=140",
+  "responseBody": "{\"timestamp\":\"2026-11-01T14:24:31.057+00:00\",\"path\":\"/api/simulator/merchants\",\"status\":404,\"error\":\"Not Found\",\"requestId\":\"7be47b48-3152\"}"
+}

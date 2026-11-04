@@ -1,0 +1,407 @@
+# Isolated practice-5 HTTP test stack; standard smp volumes/containers are never used.
+{
+  "name": "smp-api-tests",
+  "services": {
+    "postgres": {
+      "image": "postgres:16-alpine",
+      "environment": {
+        "POSTGRES_DB": "smp",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp"
+      },
+      "volumes": [
+        "api_pg_data:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U smp -d smp"
+        ],
+        "interval": "3s",
+        "timeout": "3s",
+        "retries": 30
+      }
+    },
+    "rabbitmq": {
+      "image": "rabbitmq:3.13-management",
+      "environment": {
+        "RABBITMQ_DEFAULT_USER": "smp",
+        "RABBITMQ_DEFAULT_PASS": "smp"
+      },
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "rabbitmq-diagnostics",
+          "check_running"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 30
+      }
+    },
+    "gateway": {
+      "image": "smp-api-gateway:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/gateway/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "TRANSACTIONS_RATE_LIMIT_CAPACITY": "2",
+        "TRANSACTIONS_RATE_LIMIT_REFILL_PER_SECOND": "1",
+        "SWITCH_URL": "http://card-proxy:8081",
+        "AUTH_URL": "http://card-proxy:8083",
+        "CARD_MGMT_URL": "http://card-proxy:8080",
+        "LOGGER_URL": "http://card-proxy:8082",
+        "TERMINAL_SIM_URL": "http://card-proxy:8084",
+        "MERCHANT_SIM_URL": "http://card-proxy:8085"
+      },
+      "ports": [
+        "127.0.0.1:28080:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      }
+    },
+    "card-management": {
+      "image": "smp-api-card-management:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/card-management/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "POSTGRES_HOST": "postgres",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp",
+        "POSTGRES_DB": "smp",
+        "SPRING_RABBITMQ_HOST": "rabbitmq",
+        "SPRING_RABBITMQ_PORT": "5672",
+        "SPRING_RABBITMQ_USERNAME": "smp",
+        "SPRING_RABBITMQ_PASSWORD": "smp"
+      },
+      "ports": [
+        "127.0.0.1:28081:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "rabbitmq": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "switch": {
+      "image": "smp-api-switch:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/switch/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "SPRING_RABBITMQ_HOST": "rabbitmq",
+        "SPRING_RABBITMQ_PORT": "5672",
+        "SPRING_RABBITMQ_USERNAME": "smp",
+        "SPRING_RABBITMQ_PASSWORD": "smp",
+        "AUTH_URL": "http://card-proxy:8083",
+        "LOGGER_URL": "http://transaction-logger:8080",
+        "MERCHANT_URL": "http://merchant-acquirer:8080"
+      },
+      "ports": [
+        "127.0.0.1:28082:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "rabbitmq": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "authorization": {
+      "image": "smp-api-authorization:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/authorization/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "POSTGRES_HOST": "postgres",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp",
+        "POSTGRES_DB": "smp",
+        "CARD_MGMT_URL": "http://card-proxy:8080",
+        "BIN_LOOKUP_URL": "http://bin-lookup:8080"
+      },
+      "ports": [
+        "127.0.0.1:28083:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "merchant-acquirer": {
+      "image": "smp-api-merchant-acquirer:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/merchant-acquirer/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "POSTGRES_HOST": "postgres",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp",
+        "POSTGRES_DB": "smp",
+        "GATEWAY_URL": "http://gateway:8080",
+        "CARD_MGMT_URL": "http://card-management:8080",
+        "SPRING_FLYWAY_BASELINE_ON_MIGRATE": "true",
+        "SPRING_FLYWAY_BASELINE_VERSION": "0"
+      },
+      "ports": [
+        "127.0.0.1:28084:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "terminal-simulator": {
+      "image": "smp-api-terminal-simulator:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/terminal-simulator/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "GATEWAY_URL": "http://gateway:8080",
+        "CARD_MGMT_URL": "http://card-management:8080"
+      },
+      "ports": [
+        "127.0.0.1:28085:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      }
+    },
+    "transaction-logger": {
+      "image": "smp-api-transaction-logger:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/transaction-logger/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "POSTGRES_HOST": "postgres",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp",
+        "POSTGRES_DB": "smp",
+        "SPRING_RABBITMQ_HOST": "rabbitmq",
+        "SPRING_RABBITMQ_PORT": "5672",
+        "SPRING_RABBITMQ_USERNAME": "smp",
+        "SPRING_RABBITMQ_PASSWORD": "smp",
+        "SPRING_AMQP_DESERIALIZATION_TRUST_ALL": "true"
+      },
+      "ports": [
+        "127.0.0.1:28088:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "rabbitmq": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "bin-lookup": {
+      "image": "smp-api-bin-lookup:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/bin-lookup/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k"
+      },
+      "ports": [
+        "127.0.0.1:28096:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/actuator/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      }
+    },
+    "notification-service": {
+      "image": "smp-api-notification-service:local",
+      "build": {
+        "context": ".",
+        "dockerfile": "services/notification-service/Dockerfile"
+      },
+      "environment": {
+        "SERVER_PORT": "8080",
+        "JAVA_TOOL_OPTIONS": "-Xms24m -Xmx128m -XX:MaxMetaspaceSize=112m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:ActiveProcessorCount=1 -Xss512k",
+        "POSTGRES_HOST": "postgres",
+        "POSTGRES_PORT": "5432",
+        "POSTGRES_USER": "smp",
+        "POSTGRES_PASSWORD": "smp",
+        "POSTGRES_DB": "smp",
+        "SPRING_RABBITMQ_HOST": "rabbitmq",
+        "SPRING_RABBITMQ_PORT": "5672",
+        "SPRING_RABBITMQ_USERNAME": "smp",
+        "SPRING_RABBITMQ_PASSWORD": "smp",
+        "SPRING_FLYWAY_TABLE": "flyway_schema_history_notification",
+        "SPRING_FLYWAY_BASELINE_ON_MIGRATE": "true",
+        "SPRING_FLYWAY_BASELINE_VERSION": "0"
+      },
+      "ports": [
+        "127.0.0.1:28097:8080"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:8080/actuator/health"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 50,
+        "start_period": "30s"
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        },
+        "rabbitmq": {
+          "condition": "service_healthy"
+        }
+      }
+    },
+    "card-proxy": {
+      "image": "python:3.12-alpine",
+      "command": [
+        "python",
+        "/app/fault-proxy.py"
+      ],
+      "volumes": [
+        "./services/api-tests/fault-proxy.py:/app/fault-proxy.py:ro"
+      ],
+      "ports": [
+        "127.0.0.1:28099:8090"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen(\"http://localhost:8090/__health\", timeout=3)"
+        ],
+        "interval": "5s",
+        "timeout": "5s",
+        "retries": 30
+      }
+    }
+  },
+  "volumes": {
+    "api_pg_data": {}
+  }
+}

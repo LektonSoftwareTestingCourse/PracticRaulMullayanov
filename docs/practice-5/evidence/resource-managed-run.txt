@@ -1,0 +1,91 @@
+Starting isolated smp-api-tests stack (127.0.0.1:28080–28097)...
+Temporarily stopping 12 original SMP containers (data preserved).
+API regression run 1/1
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] processing-platform                                                [pom]
+[INFO] SMP HTTP contract tests — practice 5                               [jar]
+[INFO]
+[INFO] -----------------< com.processing:processing-platform >-----------------
+[INFO] Building processing-platform 1.0.0                                 [1/2]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- checkstyle:3.6.0:check (checkstyle-validation) @ processing-platform ---
+[INFO] Starting audit...
+Audit done.
+[INFO] You have 0 Checkstyle violations.
+[INFO]
+[INFO] ----------------------< com.processing:api-tests >----------------------
+[INFO] Building SMP HTTP contract tests — practice 5 1.0.0                [2/2]
+[INFO]   from api-tests/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ api-tests ---
+[INFO] skip non existing resourceDirectory /Users/raul/ItmoProjects/PracticRaulMullayanov/services/api-tests/src/main/resources
+[INFO] skip non existing resourceDirectory /Users/raul/ItmoProjects/PracticRaulMullayanov/services/api-tests/src/main/resources
+[INFO]
+[INFO] --- compiler:3.15.0:compile (default-compile) @ api-tests ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ api-tests ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO]
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ api-tests ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO]
+[INFO] --- surefire:3.5.2:test (default-test) @ api-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.processing.api.AuthorizationValidationTest
+[INFO] Tests run: 68, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.464 s -- in com.processing.api.AuthorizationValidationTest
+[INFO] Running com.processing.api.GatewayValidationTest
+[INFO] Tests run: 51, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.768 s -- in com.processing.api.GatewayValidationTest
+[INFO] Running com.processing.api.CardValidationTest
+[INFO] Tests run: 55, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.240 s -- in com.processing.api.CardValidationTest
+[INFO] Running com.processing.api.DashboardApiTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.392 s -- in com.processing.api.DashboardApiTest
+[INFO] Running com.processing.api.LoggerApiTest
+[INFO] Tests run: 79, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.421 s -- in com.processing.api.LoggerApiTest
+[INFO] Running com.processing.api.TransactionSearchApiTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.119 s -- in com.processing.api.TransactionSearchApiTest
+[INFO] Running com.processing.api.AuthorizationApiTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.547 s -- in com.processing.api.AuthorizationApiTest
+[INFO] Running com.processing.api.AuxiliaryApiTest
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.230 s -- in com.processing.api.AuxiliaryApiTest
+[INFO] Running com.processing.api.SimulatorApiTest
+[INFO] Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.90 s -- in com.processing.api.SimulatorApiTest
+[INFO] Running com.processing.api.CardsApiTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.596 s -- in com.processing.api.CardsApiTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 405, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jar:3.4.2:jar (default-jar) @ api-tests ---
+[INFO]
+[INFO] --- checkstyle:3.6.0:check (checkstyle-validation) @ api-tests ---
+[INFO] Starting audit...
+Audit done.
+[INFO] You have 0 Checkstyle violations.
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for processing-platform 1.0.0:
+[INFO]
+[INFO] processing-platform ................................ SUCCESS [  0.513 s]
+[INFO] SMP HTTP contract tests — practice 5 ............... SUCCESS [ 45.462 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  46.101 s
+[INFO] Finished at: 2026-11-01T17:42:05+03:00
+[INFO] ------------------------------------------------------------------------
+{"regression": {"regression-1": {"tests": 405, "failures": 0, "errors": 0, "skipped": 0}, "regression-2": {"tests": 405, "failures": 0, "errors": 0, "skipped": 0}, "regression-3": {"tests": 405, "failures": 0, "errors": 0, "skipped": 0}}, "faults": {"tests": 26, "failures": 0, "errors": 0, "skipped": 0}, "strict": {"tests": 18, "failures": 18, "errors": 0, "skipped": 0}}
+API checks passed. Evidence: /Users/raul/ItmoProjects/PracticRaulMullayanov/services/api-tests/target/runs
+Restoring the original SMP containers...
+Original SMP containers are running and healthy.

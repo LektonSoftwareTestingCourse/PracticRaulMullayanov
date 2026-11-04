@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:24.235867Z",
+  "test": "StrictContractTest#d10ReversedDateRangeExplainsTheRule / d10ReversedDateRangeExplainsTheRule()",
+  "method": "GET",
+  "uri": "http://localhost:28080/api/transactions/search?dateFrom=2026-11-02&dateTo=2026-11-01",
+  "requestBody": null,
+  "status": 400,
+  "responseHeaders": "X-Request-Id=63c03b2d-a6bd-4e04-a19f-2aa188fde30a\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:24 GMT\nDate=Sun, 01 Nov 2026 14:28:24 GMT\nX-Request-Id=63c03b2d-a6bd-4e04-a19f-2aa188fde30a\nContent-Type=application/json\nContent-Length=140",
+  "responseBody": "{\"error\":\"Validation error\",\"message\":\"\",\"timestamp\":\"2026-11-01T14:28:24.252942866Z\",\"serviceName\":\"transaction-logger\",\"retryAfterMs\":\"0\"}"
+}
