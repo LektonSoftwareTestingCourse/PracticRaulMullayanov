@@ -1,0 +1,58 @@
+name: Practice 5 API contracts
+
+on:
+  push:
+    paths:
+    - 'services/**'
+    - 'docker-compose.api-tests.yaml'
+    - 'scripts/*api*.sh'
+    - 'scripts/*api*.py'
+    - '.github/workflows/api-tests.yml'
+    - 'docs/api/**'
+  pull_request:
+    paths:
+    - 'services/**'
+    - 'docker-compose.api-tests.yaml'
+    - 'scripts/*api*.sh'
+    - 'scripts/*api*.py'
+    - '.github/workflows/api-tests.yml'
+    - 'docs/api/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: '21'
+        cache: maven
+    - uses: docker/setup-buildx-action@v3
+    - name: Three regression runs, HTTP faults and mutation checks
+      run: bash scripts/run-api-tests.sh --faults --mutations
+    - name: Upload HTTP evidence, JUnit XML and logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: practice-5-api-evidence
+        path: |
+          services/api-tests/target/runs/
+          services/api-tests/target/mutations/
+          services/api-tests/target/surefire-reports/
+          services/api-tests/target/api-evidence/
+          services/api-tests/target/*.log
+          services/api-tests/target/versions.txt
+          services/api-tests/target/*checks.json
+          services/api-tests/target/*coverage.json
+          services/api-tests/target/*mutations.json
+        retention-days: 14

@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:23.697360Z",
+  "test": "StrictContractTest#d02CardResponseMustContainTheDocumentedFields / d02CardResponseMustContainTheDocumentedFields()",
+  "method": "GET",
+  "uri": "http://localhost:28080/api/cards/4000004142536444",
+  "requestBody": null,
+  "status": 200,
+  "responseHeaders": "X-Request-Id=5bd3d066-5b3b-4936-935d-3aec3bef174c\nX-Cache=MISS\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nContent-Type=application/json\nContent-Length=309",
+  "responseBody": "{\"id\":\"94271427-93bb-4022-8c77-c72343249951\",\"pan\":\"4000004142536444\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100000,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:28:23.683706Z\"}"
+}

@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:24.264857Z",
+  "test": "StrictContractTest#d11BinIssuerIdConstraintMustBeActive / d11BinIssuerIdConstraintMustBeActive()",
+  "method": "POST",
+  "uri": "http://localhost:28081/api/bins",
+  "requestBody": "{\"issuerId\":\"lower\",\"bin\":\"802444\"}",
+  "status": 201,
+  "responseHeaders": "Content-Type=application/json\nTransfer-Encoding=chunked\nDate=Sun, 01 Nov 2026 14:28:24 GMT\nKeep-Alive=timeout=60\nConnection=keep-alive",
+  "responseBody": "{\"bin\":\"802444\",\"issuerId\":\"lower\"}"
+}

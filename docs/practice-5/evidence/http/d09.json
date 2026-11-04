@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:23.781311Z",
+  "test": "StrictContractTest#d09RollbackCannotCreditMoreThanWasReserved / d09RollbackCannotCreditMoreThanWasReserved()",
+  "method": "POST",
+  "uri": "http://localhost:28080/api/cards/4000006580382561/rollback",
+  "requestBody": "{\"amount\":101,\"rrn\":\"364959471602\",\"pan\":\"4000006580382561\"}",
+  "status": 200,
+  "responseHeaders": "X-Request-Id=5952c0d1-9c6e-41a4-9f27-a9f65cee06f6\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nContent-Type=application/json\nContent-Length=309",
+  "responseBody": "{\"id\":\"3e83dabb-77c5-4802-a6a1-57ecbde0d7aa\",\"pan\":\"4000006580382561\",\"bin\":\"400000\",\"cardholderName\":\"RAUL API TEST\",\"expiryDate\":\"2029-11\",\"status\":\"ACTIVE\",\"currencyCode\":\"643\",\"dailyLimit\":10000,\"monthlyLimit\":100000,\"availableBalance\":100001,\"issuerId\":\"ISS001\",\"createdAt\":\"2026-11-01T14:28:23.761965Z\"}"
+}

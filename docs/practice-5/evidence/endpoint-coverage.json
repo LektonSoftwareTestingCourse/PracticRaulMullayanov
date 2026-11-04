@@ -1,0 +1,554 @@
+{
+  "28080 DELETE /api/cards/400000123456789": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 DELETE /api/cards/40000012345678901": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 DELETE /api/cards/400000123456789A": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 DELETE /api/cards/{pan}": {
+    "statuses": [
+      204,
+      404,
+      503
+    ],
+    "junit_cases_sending_requests": 4,
+    "requests_including_setup_cleanup_and_polling": 5
+  },
+  "28080 GET /api/bins": {
+    "statuses": [
+      404
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/cards": {
+    "statuses": [
+      200,
+      400,
+      413,
+      503
+    ],
+    "junit_cases_sending_requests": 23,
+    "requests_including_setup_cleanup_and_polling": 63
+  },
+  "28080 GET /api/cards/400000123456789": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/cards/40000012345678901": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/cards/400000123456789A": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/cards/{pan}": {
+    "statuses": [
+      200,
+      404,
+      503
+    ],
+    "junit_cases_sending_requests": 5,
+    "requests_including_setup_cleanup_and_polling": 7
+  },
+  "28080 GET /api/dashboard/charts": {
+    "statuses": [
+      200,
+      400,
+      503
+    ],
+    "junit_cases_sending_requests": 7,
+    "requests_including_setup_cleanup_and_polling": 7
+  },
+  "28080 GET /api/dashboard/recent": {
+    "statuses": [
+      200,
+      400,
+      503
+    ],
+    "junit_cases_sending_requests": 7,
+    "requests_including_setup_cleanup_and_polling": 7
+  },
+  "28080 GET /api/dashboard/stats": {
+    "statuses": [
+      200,
+      503
+    ],
+    "junit_cases_sending_requests": 2,
+    "requests_including_setup_cleanup_and_polling": 2
+  },
+  "28080 GET /api/notifications": {
+    "statuses": [
+      404
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/simulator/merchants": {
+    "statuses": [
+      404
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /api/transactions/export": {
+    "statuses": [
+      200,
+      400,
+      503
+    ],
+    "junit_cases_sending_requests": 11,
+    "requests_including_setup_cleanup_and_polling": 11
+  },
+  "28080 GET /api/transactions/search": {
+    "statuses": [
+      200,
+      400,
+      503
+    ],
+    "junit_cases_sending_requests": 107,
+    "requests_including_setup_cleanup_and_polling": 182
+  },
+  "28080 GET /cards-docs": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /logger-docs": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /merchant-docs": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /switch-docs": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 GET /terminal-docs": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 PATCH /api/cards/400000123456789": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 PATCH /api/cards/40000012345678901": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 PATCH /api/cards/400000123456789A": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 PATCH /api/cards/{pan}": {
+    "statuses": [
+      200,
+      400,
+      404,
+      503
+    ],
+    "junit_cases_sending_requests": 36,
+    "requests_including_setup_cleanup_and_polling": 36
+  },
+  "28080 POST /api/cards": {
+    "statuses": [
+      201,
+      400,
+      404,
+      503
+    ],
+    "junit_cases_sending_requests": 120,
+    "requests_including_setup_cleanup_and_polling": 150
+  },
+  "28080 POST /api/cards/400000123456789/reserve": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/400000123456789/rollback": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/40000012345678901/reserve": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/40000012345678901/rollback": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/400000123456789A/reserve": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/400000123456789A/rollback": {
+    "statuses": [
+      400
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/cards/bulk-update": {
+    "statuses": [
+      200,
+      400
+    ],
+    "junit_cases_sending_requests": 6,
+    "requests_including_setup_cleanup_and_polling": 7
+  },
+  "28080 POST /api/cards/generate": {
+    "statuses": [
+      201,
+      400,
+      404
+    ],
+    "junit_cases_sending_requests": 8,
+    "requests_including_setup_cleanup_and_polling": 8
+  },
+  "28080 POST /api/cards/{pan}/reserve": {
+    "statuses": [
+      200,
+      400,
+      402,
+      404,
+      409,
+      500
+    ],
+    "junit_cases_sending_requests": 12,
+    "requests_including_setup_cleanup_and_polling": 14
+  },
+  "28080 POST /api/cards/{pan}/rollback": {
+    "statuses": [
+      200,
+      400,
+      404,
+      409
+    ],
+    "junit_cases_sending_requests": 9,
+    "requests_including_setup_cleanup_and_polling": 10
+  },
+  "28080 POST /api/simulator/merchant/fee": {
+    "statuses": [
+      200,
+      400,
+      404
+    ],
+    "junit_cases_sending_requests": 6,
+    "requests_including_setup_cleanup_and_polling": 6
+  },
+  "28080 POST /api/simulator/merchant/run": {
+    "statuses": [
+      200,
+      400,
+      404,
+      503
+    ],
+    "junit_cases_sending_requests": 13,
+    "requests_including_setup_cleanup_and_polling": 13
+  },
+  "28080 POST /api/simulator/terminal/run": {
+    "statuses": [
+      200,
+      400,
+      503
+    ],
+    "junit_cases_sending_requests": 13,
+    "requests_including_setup_cleanup_and_polling": 13
+  },
+  "28080 POST /api/simulator/terminal/start-continuous": {
+    "statuses": [
+      200,
+      400,
+      422
+    ],
+    "junit_cases_sending_requests": 4,
+    "requests_including_setup_cleanup_and_polling": 5
+  },
+  "28080 POST /api/simulator/terminal/stop": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28080 POST /api/transactions": {
+    "statuses": [
+      200,
+      400,
+      429,
+      503
+    ],
+    "junit_cases_sending_requests": 68,
+    "requests_including_setup_cleanup_and_polling": 75
+  },
+  "28081 DELETE /api/bins/{bin}": {
+    "statuses": [
+      204,
+      404
+    ],
+    "junit_cases_sending_requests": 17,
+    "requests_including_setup_cleanup_and_polling": 21
+  },
+  "28081 DELETE /api/cards/{pan}": {
+    "statuses": [
+      204,
+      404
+    ],
+    "junit_cases_sending_requests": 102,
+    "requests_including_setup_cleanup_and_polling": 133
+  },
+  "28081 GET /api/bins": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28081 GET /api/bins/{bin}": {
+    "statuses": [
+      200,
+      404
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 2
+  },
+  "28081 GET /api/cards/{pan}": {
+    "statuses": [
+      200,
+      404
+    ],
+    "junit_cases_sending_requests": 68,
+    "requests_including_setup_cleanup_and_polling": 86
+  },
+  "28081 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28081 POST /api/bins": {
+    "statuses": [
+      201,
+      400,
+      409
+    ],
+    "junit_cases_sending_requests": 20,
+    "requests_including_setup_cleanup_and_polling": 24
+  },
+  "28081 POST /api/cards/{pan}/reserve": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28082 GET /actuator/health": {
+    "statuses": [
+      200,
+      503
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 9
+  },
+  "28082 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28082 POST /api/internal/route": {
+    "statuses": [
+      200,
+      400
+    ],
+    "junit_cases_sending_requests": 5,
+    "requests_including_setup_cleanup_and_polling": 5
+  },
+  "28083 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28083 POST /api/internal/authorize": {
+    "statuses": [
+      200,
+      400,
+      403,
+      404,
+      422,
+      500,
+      503
+    ],
+    "junit_cases_sending_requests": 81,
+    "requests_including_setup_cleanup_and_polling": 83
+  },
+  "28083 POST /api/internal/rollback": {
+    "statuses": [
+      200,
+      400,
+      404,
+      409,
+      503
+    ],
+    "junit_cases_sending_requests": 24,
+    "requests_including_setup_cleanup_and_polling": 25
+  },
+  "28084 GET /api/simulator/merchants": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28084 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28084 POST /api/simulator/merchant/run": {
+    "statuses": [
+      502
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28085 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28088 GET /api/internal/log": {
+    "statuses": [
+      405
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28088 GET /health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28088 POST /api/internal/log": {
+    "statuses": [
+      200,
+      201,
+      400,
+      409
+    ],
+    "junit_cases_sending_requests": 100,
+    "requests_including_setup_cleanup_and_polling": 155
+  },
+  "28096 GET /actuator/health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28096 GET /api/bin/{bin}": {
+    "statuses": [
+      200,
+      400,
+      404,
+      500
+    ],
+    "junit_cases_sending_requests": 8,
+    "requests_including_setup_cleanup_and_polling": 9
+  },
+  "28097 GET /actuator/health": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 1,
+    "requests_including_setup_cleanup_and_polling": 1
+  },
+  "28097 GET /api/notifications": {
+    "statuses": [
+      200
+    ],
+    "junit_cases_sending_requests": 3,
+    "requests_including_setup_cleanup_and_polling": 3
+  }
+}

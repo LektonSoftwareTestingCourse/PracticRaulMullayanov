@@ -1,0 +1,10 @@
+{
+  "time": "2026-11-01T14:28:23.622817Z",
+  "test": "StrictContractTest#d07TerminalRequestFromSpecificationMustWorkWithoutTps / d07TerminalRequestFromSpecificationMustWorkWithoutTps()",
+  "method": "POST",
+  "uri": "http://localhost:28080/api/simulator/terminal/run",
+  "requestBody": "{\"scenario\":\"normal\",\"count\":1}",
+  "status": 400,
+  "responseHeaders": "X-Request-Id=83106f85-57b2-4f9b-a642-15b1c7a8f550\nServer=BaseHTTP/0.6 Python/3.12.16\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nDate=Sun, 01 Nov 2026 14:28:23 GMT\nContent-Type=application/json\nContent-Length=777",
+  "responseBody": "{\"error\":\"Validation failed\",\"message\":\"Validation failed for argument [0] in public org.springframework.http.ResponseEntity<com.processing.common.dto.terminalsimulator.TerminalRunResponse> com.processing.terminalsimulator.controller.TerminalSimulatorController.run(com.processing.common.dto.terminalsimulator.TerminalRunRequest): [Field error in object 'terminalRunRequest' on field 'tps': rejected value [0]; codes [Min.terminalRunRequest.tps,Min.tps,Min.int,Min]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [terminalRunRequest.tps,tps]; arguments []; default message [tps],1]; default message [must be greater than or equal to 1]] \",\"timestamp\":\"2026-11-01T14:28:23.643136032Z\",\"serviceName\":\"terminal-simulator\",\"retryAfterMs\":\"0\"}"
+}

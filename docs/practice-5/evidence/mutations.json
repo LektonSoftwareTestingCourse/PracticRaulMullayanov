@@ -1,0 +1,98 @@
+{
+  "dedup-disabled": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "com.processing.api.LoggerApiTest",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 0.862,
+        "cases": [
+          {
+            "name": "sameIdAndSamePayloadAreIdempotent",
+            "seconds": 0.856,
+            "result": "failure",
+            "message": "1 expectation failed.\nExpected status code <200> but was <201>.\n"
+          }
+        ]
+      }
+    ]
+  },
+  "restored-green": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "com.processing.api.LoggerApiTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 1.024,
+        "cases": [
+          {
+            "name": "sameIdAndSamePayloadAreIdempotent",
+            "seconds": 1.013,
+            "result": "passed",
+            "message": ""
+          }
+        ]
+      }
+    ]
+  },
+  "wrong-balance": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "com.processing.api.AuthorizationApiTest",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 0.922,
+        "cases": [
+          {
+            "name": "purchaseTraversesGatewaySwitchAuthorizationAndLogger",
+            "seconds": 0.915,
+            "result": "failure",
+            "message": "1 expectation failed.\nJSON path availableBalance doesn't match.\nExpected: <99901>\n  Actual: <99900>\n"
+          }
+        ]
+      }
+    ]
+  },
+  "wrong-http-status": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "suites": [
+      {
+        "class": "com.processing.api.GatewayValidationTest",
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 0.494,
+        "cases": [
+          {
+            "name": "jsonNullBodyHasDedicatedError",
+            "seconds": 0.484,
+            "result": "failure",
+            "message": "1 expectation failed.\nExpected status code <401> but was <400>.\n"
+          }
+        ]
+      }
+    ]
+  }
+}

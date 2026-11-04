@@ -1,0 +1,17 @@
+{
+  "http": {
+    "time": "2026-11-01T13:58:37.175207Z",
+    "method": "POST",
+    "uri": "http://localhost:28080/api/simulator/terminal/run",
+    "requestBody": "{\"scenario\":\"normal\",\"tps\":1,\"count\":1}",
+    "status": 500,
+    "responseHeaders": "X-Request-Id=05dc4229-78cb-4125-81ea-2ed50c199a94\nContent-Type=application/json\nContent-Length=155",
+    "responseBody": "{\"timestamp\":\"2026-11-01T13:58:37.165+00:00\",\"path\":\"/api/simulator/terminal/run\",\"status\":500,\"error\":\"Internal Server Error\",\"requestId\":\"03385763-1443\"}"
+  },
+  "gateway_log_excerpt": [
+    "gateway-1             | 2026-11-01 13:58:37 [reactor-http-nio-2] ERROR o.s.b.a.w.r.e.AbstractErrorWebExceptionHandler  - [03385763-1443]  500 Server Error for HTTP POST \"/api/simulator/terminal/run\"",
+    "gateway-1             | io.netty.channel.AbstractChannel$AnnotatedNoRouteToHostException: Host is unreachable (connect failed): terminal-simulator/172.25.0.2:8080",
+    "gateway-1             | \tSuppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: ",
+    "gateway-1             | Error has been observed at the following site(s):"
+  ]
+}
